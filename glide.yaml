@@ -1,0 +1,5 @@
+package: github.com/vx-labs/mqtt-protocol
+testImport:
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert
