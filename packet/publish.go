@@ -68,7 +68,7 @@ func (h *Publish) Type() byte {
 	return PUBLISH
 }
 func (h *Publish) String() string {
-	return fmt.Sprintf("publish (mid: %d)", h.messageId)
+	return "publish"
 }
 func (h *Publish) FixedHeader(l int) types.Field {
 	return h.header.WithRemainingLength(l)

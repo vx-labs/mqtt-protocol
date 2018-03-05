@@ -3,7 +3,6 @@ package packet
 import (
 	"github.com/vx-labs/mqtt-protocol/types"
 	"io"
-	"fmt"
 )
 
 type Puback struct {
@@ -27,7 +26,7 @@ func (p *Puback) Type() byte {
 	return PUBACK
 }
 func (p *Puback) String() string {
-	return fmt.Sprintf("puback (mid: %d)", p.messageId)
+	return "puback"
 }
 func (p *Puback) FixedHeader(l int) types.Field {
 	return p.header.WithRemainingLength(l)
