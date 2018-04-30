@@ -1,3 +1,3 @@
-package types
+package pb
 
-//go:generate protoc --go_out=plugins=grpc:. packets.proto
+//go:generate protoc --go_out=plugins=grpc:. pb.proto
