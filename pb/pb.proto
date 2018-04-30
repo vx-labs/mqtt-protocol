@@ -25,6 +25,7 @@ message MqttPublish {
     string topic = 2;
     bytes qos = 3;
     string payload = 4;
+    bool retain = 5;
 };
 
 message MqttPuback {
