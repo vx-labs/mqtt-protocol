@@ -13,7 +13,7 @@ message MqttConnect {
     int32 keepaliveTimer = 10;
 };
 message MqttConnack {
-    int32 returnCode = 1;
+    bytes returnCode = 1;
 };
 
 message MqttDisconnect {
