@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+message MqttConnect {
+    string id = 1;
+    bool clean = 2;
+    string clientId = 3;
+    string username  = 4;
+    string password  = 5;
+    string willTopic = 6;
+    string willPayload = 7;
+    bytes willQos = 8;
+    bool willRetain = 9;
+    int32 keepaliveTimer = 10;
+};
+message MqttConnack {
+    int32 returnCode = 1;
+};
+
+message MqttDisconnect {
+    string id = 1;
+};
+
+message MqttPublish {
+    int32 messageId = 1;
+    string topic = 2;
+    bytes qos = 3;
+    string payload = 4;
+};
+
+message MqttPuback {
+    int32 messageId = 1;
+};
+
+message MqttSubscribe {
+    int32 messageId = 1;
+    repeated string topic = 2;
+    repeated bytes qos = 3;
+};
+message MqttSuback {
+    int32 messageId = 1;
+    repeated bytes qos = 3;
+};
+
+message MqttUnsubscribe {
+    int32 messageId = 1;
+    repeated string topic = 2;
+};
+message MqttUnsuback {
+    int32 messageId = 1;
+};
