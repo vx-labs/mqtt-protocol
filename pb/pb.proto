@@ -3,12 +3,12 @@ syntax = "proto3";
 message MqttConnect {
     string id = 1;
     bool clean = 2;
-    string clientId = 3;
-    string username  = 4;
-    string password  = 5;
-    string willTopic = 6;
-    string willPayload = 7;
-    bytes willQos = 8;
+    bytes clientId = 3;
+    bytes username  = 4;
+    bytes password  = 5;
+    bytes willTopic = 6;
+    bytes willPayload = 7;
+    int32 willQos = 8;
     bool willRetain = 9;
     int32 keepaliveTimer = 10;
 };
@@ -23,7 +23,7 @@ message MqttDisconnect {
 message MqttPublish {
     int32 messageId = 1;
     string topic = 2;
-    bytes qos = 3;
+    int32 qos = 3;
     string payload = 4;
     bool retain = 5;
 };
@@ -35,11 +35,11 @@ message MqttPuback {
 message MqttSubscribe {
     int32 messageId = 1;
     repeated string topic = 2;
-    repeated bytes qos = 3;
+    repeated int32 qos = 3;
 };
 message MqttSuback {
     int32 messageId = 1;
-    repeated bytes qos = 3;
+    repeated int32 qos = 3;
 };
 
 message MqttUnsubscribe {
