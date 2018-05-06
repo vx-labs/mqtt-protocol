@@ -1,8 +1,9 @@
 package packet
 
 import (
-	"testing"
 	"bytes"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,4 +38,15 @@ func TestDecoder_Decode_Pingreq(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, PINGREQ, p.Type())
 	assert.IsType(t, &Pingreq{}, p)
+}
+func BenchmarkDecoder_Decode_Publish(b *testing.B) {
+	reader := bytes.NewReader(nil)
+	d := decoder()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		reader.Reset([]byte{0x32, 0x7, 0x0, 0x1, 'a', 0x0, 0x1, 'p', 'a'})
+		b.StartTimer()
+		d.Decode(reader)
+		b.StopTimer()
+	}
 }
