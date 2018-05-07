@@ -43,7 +43,7 @@ message MqttPuback {
 message MqttSubscribe {
     MqttHeader header =1;
     int32 messageId = 2;
-    repeated string topic = 3;
+    repeated bytes topic = 3;
     repeated int32 qos = 4;
 };
 message MqttSuback {
@@ -55,7 +55,7 @@ message MqttSuback {
 message MqttUnsubscribe {
     MqttHeader header =1;
     int32 messageId = 2;
-    repeated string topic = 3;
+    repeated bytes topic = 3;
 };
 message MqttUnsuback {
     MqttHeader header =1;
