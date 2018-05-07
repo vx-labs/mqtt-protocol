@@ -49,3 +49,9 @@ message MqttUnsubscribe {
 message MqttUnsuback {
     int32 messageId = 1;
 };
+
+message MqttPingReq {
+};
+
+message MqttPingResp {
+};
