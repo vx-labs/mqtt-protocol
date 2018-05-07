@@ -25,7 +25,7 @@ func TestSubscribe_CountTopics(t *testing.T) {
 		0x0, 0x2, 'a', 'b', 0x1,
 		0x0, 0x2, 'a', 'b', 0x1,
 	}
-	n, err := countTopics(buff)
+	n, err := countSubscribeTopics(buff)
 	assert.Nil(t, err)
 	assert.Equal(t, 4, n)
 }
@@ -36,7 +36,7 @@ func BenchmarkSubscribe_CountTopics(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		countTopics(buff)
+		countSubscribeTopics(buff)
 	}
 }
 

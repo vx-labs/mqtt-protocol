@@ -4,10 +4,10 @@ import (
 	"encoding/binary"
 )
 
-func countSubscribeTopics(buff []byte) (count int, err error) {
+func countUnsubscribeTopics(buff []byte) (count int, err error) {
 	for {
 		length := int(binary.BigEndian.Uint16(buff))
-		next := 2 + length + 1
+		next := 2 + length
 		count++
 		if next == len(buff) {
 			return
@@ -16,14 +16,13 @@ func countSubscribeTopics(buff []byte) (count int, err error) {
 	}
 }
 
-func decodeSubscribe(p *MqttSubscribe, buff []byte) (int, error) {
+func decodeUnsubscribe(p *MqttUnsubscribe, buff []byte) (int, error) {
 	p.MessageId = int32(binary.BigEndian.Uint16(buff))
 	total := 2
-	length, err := countSubscribeTopics(buff[total:])
+	length, err := countUnsubscribeTopics(buff[total:])
 	if err != nil {
 		return total, err
 	}
-	p.Qos = make([]int32, length)
 	p.Topic = make([][]byte, length)
 	idx := 0
 	for total < len(buff) {
@@ -32,9 +31,6 @@ func decodeSubscribe(p *MqttSubscribe, buff []byte) (int, error) {
 		if err != nil {
 			return total, err
 		}
-		qos := int32(buff[total])
-		total++
-		p.Qos[idx] = qos
 		p.Topic[idx] = topic
 		idx++
 	}
