@@ -1,57 +1,71 @@
 syntax = "proto3";
 
+message MqttHeader {
+	bool dup = 1;
+	int32 qos = 2;
+	bool retain = 3;
+}
 message MqttConnect {
-    string id = 1;
-    bool clean = 2;
-    bytes clientId = 3;
-    bytes username  = 4;
-    bytes password  = 5;
-    bytes willTopic = 6;
-    bytes willPayload = 7;
-    int32 willQos = 8;
-    bool willRetain = 9;
-    int32 keepaliveTimer = 10;
+    MqttHeader header =1;
+    string id = 2;
+    bool clean = 3;
+    bytes clientId = 4;
+    bytes username  = 5;
+    bytes password  = 6;
+    bytes willTopic = 7;
+    bytes willPayload = 8;
+    int32 willQos = 9;
+    bool willRetain = 10;
+    int32 keepaliveTimer = 11;
 };
 message MqttConnack {
-    bytes returnCode = 1;
+    MqttHeader header = 1;
+    bytes returnCode = 2;
 };
 
 message MqttDisconnect {
-    string id = 1;
+    MqttHeader header =1;
+    string id = 2;
 };
 
 message MqttPublish {
-    int32 messageId = 1;
-    string topic = 2;
-    int32 qos = 3;
-    string payload = 4;
-    bool retain = 5;
+    MqttHeader header =1;
+    int32 messageId = 2;
+    bytes topic = 3;
+    bytes payload = 4;
 };
 
 message MqttPuback {
-    int32 messageId = 1;
+    MqttHeader header =1;
+    int32 messageId = 2;
 };
 
 message MqttSubscribe {
-    int32 messageId = 1;
-    repeated string topic = 2;
-    repeated int32 qos = 3;
+    MqttHeader header =1;
+    int32 messageId = 2;
+    repeated string topic = 3;
+    repeated int32 qos = 4;
 };
 message MqttSuback {
-    int32 messageId = 1;
+    MqttHeader header =1;
+    int32 messageId = 2;
     repeated int32 qos = 3;
 };
 
 message MqttUnsubscribe {
-    int32 messageId = 1;
-    repeated string topic = 2;
+    MqttHeader header =1;
+    int32 messageId = 2;
+    repeated string topic = 3;
 };
 message MqttUnsuback {
-    int32 messageId = 1;
+    MqttHeader header =1;
+    int32 messageId = 2;
 };
 
 message MqttPingReq {
+    MqttHeader header =1;
 };
 
 message MqttPingResp {
+    MqttHeader header =1;
 };
