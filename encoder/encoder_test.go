@@ -98,3 +98,15 @@ func BenchmarkEncoder_PubAck(b *testing.B) {
 		e.PubAck(p, buff)
 	}
 }
+func TestEncoder_PingResp(t *testing.T) {
+	buff := make([]byte, 12)
+	writer := bytes.NewBuffer([]byte{})
+	e := NewEncoder(writer)
+	err := e.PingResp(&pb.MqttPingResp{
+		Header: &pb.MqttHeader{},
+	}, buff)
+	assert.Nil(t, err)
+	assert.Equal(t,
+		[]byte{0xd0, 0x0},
+		writer.Bytes())
+}
