@@ -40,13 +40,12 @@ func TestDecoder_Decode_Pingreq(t *testing.T) {
 	assert.IsType(t, &Pingreq{}, p)
 }
 func BenchmarkDecoder_Decode_Publish(b *testing.B) {
+	buff := []byte{0x32, 0x7, 0x0, 0x1, 'a', 0x0, 0x1, 'p', 'a'}
 	reader := bytes.NewReader(nil)
 	d := decoder()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		reader.Reset([]byte{0x32, 0x7, 0x0, 0x1, 'a', 0x0, 0x1, 'p', 'a'})
-		b.StartTimer()
+		reader.Reset(buff)
 		d.Decode(reader)
-		b.StopTimer()
 	}
 }
