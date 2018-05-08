@@ -11,6 +11,12 @@ func OnPublish(fn func(*pb.MqttPublish) error) decoderCreateOp {
 	}
 }
 
+func OnDisconnect(fn func(*pb.MqttDisconnect) error) decoderCreateOp {
+	return func(d Decoder) Decoder {
+		d.disconnectHandler = fn
+		return d
+	}
+}
 func OnConnect(fn func(*pb.MqttConnect) error) decoderCreateOp {
 	return func(d Decoder) Decoder {
 		d.connectHandler = fn

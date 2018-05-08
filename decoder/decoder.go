@@ -36,6 +36,7 @@ func packetDecoders(d *Decoder) map[byte]packetDecoder {
 		SUBSCRIBE:   pb.SubscribeDecoder(d.subscribeHandler),
 		UNSUBSCRIBE: pb.UnsubscribeDecoder(d.unsubscribeHandler),
 		PINGREQ:     pb.PingReqDecoder(d.pingReqHandler),
+		DISCONNECT:  pb.DisconnectDecoder(d.disconnectHandler),
 	}
 }
 
@@ -64,6 +65,9 @@ func NewDecoder(opts ...decoderCreateOp) *Decoder {
 		unsubscribeHandler: func(*pb.MqttUnsubscribe) error {
 			return defaultPacketHandler("unsubcribe")
 		},
+		disconnectHandler: func(*pb.MqttDisconnect) error {
+			return defaultPacketHandler("disconnect")
+		},
 	}
 	for _, op := range opts {
 		d = op(d)
@@ -83,6 +87,7 @@ type Decoder struct {
 	pubAckHandler      func(*pb.MqttPubAck) error
 	subscribeHandler   func(*pb.MqttSubscribe) error
 	unsubscribeHandler func(*pb.MqttUnsubscribe) error
+	disconnectHandler  func(*pb.MqttDisconnect) error
 }
 
 func (d *Decoder) Decode(r io.Reader) error {
