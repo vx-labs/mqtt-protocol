@@ -50,6 +50,7 @@ func TestEncoder_Publish(t *testing.T) {
 		[]byte{0x32, 0x7, 0x0, 0x1, 'a', 0x0, 0x1, 'p', 'a'},
 		writer.Bytes())
 }
+
 func BenchmarkEncoder_Publish(b *testing.B) {
 	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
@@ -65,5 +66,35 @@ func BenchmarkEncoder_Publish(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		e.Publish(p, buff)
+	}
+}
+func TestEncoder_PubAck(t *testing.T) {
+	buff := make([]byte, 12)
+	writer := bytes.NewBuffer([]byte{})
+	e := NewEncoder(writer)
+	err := e.PubAck(&pb.MqttPubAck{
+		Header: &pb.MqttHeader{
+			Qos: 1,
+		},
+		MessageId: 9,
+	}, buff)
+	assert.Nil(t, err)
+	assert.Equal(t,
+		[]byte{0x42, 0x2, 0x0, 0x9},
+		writer.Bytes())
+}
+func BenchmarkEncoder_PubAck(b *testing.B) {
+	buff := make([]byte, 12)
+	writer := bytes.NewBuffer([]byte{})
+	e := NewEncoder(writer)
+	p := &pb.MqttPubAck{
+		Header: &pb.MqttHeader{
+			Qos: 1,
+		},
+		MessageId: 9,
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		e.PubAck(p, buff)
 	}
 }

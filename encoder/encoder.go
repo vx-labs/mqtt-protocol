@@ -2,7 +2,6 @@ package encoder
 
 import (
 	"encoding/binary"
-	"errors"
 	"io"
 
 	"github.com/vx-labs/mqtt-protocol/packet"
@@ -28,23 +27,20 @@ func (e *Encoder) flush(buff []byte) error {
 	}
 	return nil
 }
-func (e *Encoder) encode(packetType byte, header *pb.MqttHeader, total int, buff []byte) error {
-	n, err := encodeHeader(packet.PUBLISH, header, total, buff[:4])
+func (e *Encoder) encode(packetType byte, header *pb.MqttHeader, boundary, total int, buff []byte) error {
+	n, err := encodeHeader(packetType, header, total, buff[:boundary])
 	total += n
 	if err != nil {
 		return err
 	}
 
-	if n < 4 {
-		copy(buff[4-n:total], buff[4:])
+	if n < boundary {
+		copy(buff[boundary-n:total], buff[boundary:])
 	}
 	return e.flush(buff[:total])
 }
 
 func encodeHeader(packetType byte, header *pb.MqttHeader, remLength int, buff []byte) (int, error) {
-	if len(buff) < 4 {
-		return 0, errors.New("buffer too small")
-	}
 	var dup, qos, retain byte
 	if header.Dup {
 		dup = 1
@@ -66,5 +62,12 @@ func (e *Encoder) Publish(p *pb.MqttPublish, buff []byte) error {
 	if err != nil {
 		return err
 	}
-	return e.encode(packet.PUBLISH, p.Header, total, buff)
+	return e.encode(packet.PUBLISH, p.Header, 4, total, buff)
+}
+func (e *Encoder) PubAck(p *pb.MqttPubAck, buff []byte) error {
+	total, err := pb.EncodePubAck(p, buff[2:])
+	if err != nil {
+		return err
+	}
+	return e.encode(packet.PUBACK, p.Header, 2, total, buff)
 }
