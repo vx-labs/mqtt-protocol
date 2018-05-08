@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	Max_Packet_Size = 8092
+	Max_Packet_Size = 8192
 )
 
 const (
