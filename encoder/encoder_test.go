@@ -1,0 +1,69 @@
+package encoder
+
+import (
+	"bytes"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/vx-labs/mqtt-protocol/packet"
+	"github.com/vx-labs/mqtt-protocol/pb"
+)
+
+func TestEncoder_EncodeHeader(t *testing.T) {
+	buff := make([]byte, 5)
+	n, err := encodeHeader(packet.PUBLISH, &pb.MqttHeader{}, 10, buff)
+	assert.Nil(t, err)
+	assert.Equal(t, 2, n)
+	assert.Equal(t, packet.PUBLISH<<4, buff[0])
+	assert.Equal(t, byte(0xa), buff[1])
+}
+func TestEncoder_EncodeHeader_Long(t *testing.T) {
+	buff := make([]byte, 5)
+	n, err := encodeHeader(packet.PUBLISH, &pb.MqttHeader{}, 129, buff)
+	assert.Nil(t, err)
+	assert.Equal(t, 3, n)
+	assert.Equal(t, packet.PUBLISH<<4, buff[0])
+	assert.Equal(t, byte(0x81), buff[1])
+	assert.Equal(t, byte(0x1), buff[2])
+}
+func BenchmarkEncoder_EncodeHeader_Long(b *testing.B) {
+	buff := make([]byte, 5)
+	for i := 0; i < b.N; i++ {
+		encodeHeader(packet.PUBLISH, &pb.MqttHeader{}, 129, buff)
+	}
+}
+
+func TestEncoder_Publish(t *testing.T) {
+	buff := make([]byte, 12)
+	writer := bytes.NewBuffer([]byte{})
+	e := NewEncoder(writer)
+	err := e.Publish(&pb.MqttPublish{
+		Header: &pb.MqttHeader{
+			Qos: 1,
+		},
+		MessageId: 1,
+		Topic:     []byte("a"),
+		Payload:   []byte("pa"),
+	}, buff)
+	assert.Nil(t, err)
+	assert.Equal(t,
+		[]byte{0x32, 0x7, 0x0, 0x1, 'a', 0x0, 0x1, 'p', 'a'},
+		writer.Bytes())
+}
+func BenchmarkEncoder_Publish(b *testing.B) {
+	buff := make([]byte, 12)
+	writer := bytes.NewBuffer([]byte{})
+	e := NewEncoder(writer)
+	p := &pb.MqttPublish{
+		Header: &pb.MqttHeader{
+			Qos: 1,
+		},
+		MessageId: 1,
+		Topic:     []byte("a"),
+		Payload:   []byte("pa"),
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		e.Publish(p, buff)
+	}
+}

@@ -20,7 +20,7 @@ func decodePublish(p *MqttPublish, buff []byte) (int, error) {
 	p.Payload = buff[total:]
 	return len(buff), nil
 }
-func encodePublish(p *MqttPublish, buff []byte) (int, error) {
+func EncodePublish(p *MqttPublish, buff []byte) (int, error) {
 	total := 0
 	n, err := encodeLP(p.Topic, buff)
 	total += n

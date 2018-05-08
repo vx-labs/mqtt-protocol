@@ -4,6 +4,7 @@ import (
 	fmt "fmt"
 	"io"
 
+	"github.com/vx-labs/mqtt-protocol/packet"
 	"github.com/vx-labs/mqtt-protocol/pb"
 )
 
@@ -11,32 +12,14 @@ const (
 	Default_Buffer_Size = 8192
 )
 
-const (
-	_ byte = iota
-	CONNECT
-	CONNACK
-	PUBLISH
-	PUBACK
-	PUBREC
-	PUBREL
-	PUBCOMP
-	SUBSCRIBE
-	SUBACK
-	UNSUBSCRIBE
-	UNSUBACK
-	PINGREQ
-	PINGRESP
-	DISCONNECT
-)
-
 func packetDecoders(d *Decoder) map[byte]packetDecoder {
 	return map[byte]packetDecoder{
-		PUBLISH:     pb.PublishDecoder(d.publishHandler),
-		CONNECT:     pb.ConnectDecoder(d.connectHandler),
-		SUBSCRIBE:   pb.SubscribeDecoder(d.subscribeHandler),
-		UNSUBSCRIBE: pb.UnsubscribeDecoder(d.unsubscribeHandler),
-		PINGREQ:     pb.PingReqDecoder(d.pingReqHandler),
-		DISCONNECT:  pb.DisconnectDecoder(d.disconnectHandler),
+		packet.PUBLISH:     pb.PublishDecoder(d.publishHandler),
+		packet.CONNECT:     pb.ConnectDecoder(d.connectHandler),
+		packet.SUBSCRIBE:   pb.SubscribeDecoder(d.subscribeHandler),
+		packet.UNSUBSCRIBE: pb.UnsubscribeDecoder(d.unsubscribeHandler),
+		packet.PINGREQ:     pb.PingReqDecoder(d.pingReqHandler),
+		packet.DISCONNECT:  pb.DisconnectDecoder(d.disconnectHandler),
 	}
 }
 
