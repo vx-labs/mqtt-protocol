@@ -124,3 +124,16 @@ func TestEncoder_SubAck(t *testing.T) {
 		[]byte{0x90, 0x5, 0x0, 0xc, 0x1, 0x2, 0x1},
 		writer.Bytes())
 }
+func TestEncoder_UnsubAck(t *testing.T) {
+	buff := make([]byte, 12)
+	writer := bytes.NewBuffer([]byte{})
+	e := NewEncoder(writer)
+	err := e.UnsubAck(&pb.MqttUnsubAck{
+		Header:    &pb.MqttHeader{},
+		MessageId: 12,
+	}, buff)
+	assert.Nil(t, err)
+	assert.Equal(t,
+		[]byte{0xb0, 0x2, 0x0, 0xc},
+		writer.Bytes())
+}
