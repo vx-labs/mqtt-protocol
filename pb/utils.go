@@ -21,3 +21,14 @@ func decodeLP(buff []byte) ([]byte, int, error) {
 	total += size
 	return buff[2 : size+2], total, nil
 }
+func encodeLP(value []byte, buff []byte) (int, error) {
+	size := len(value)
+	if len(buff) < size+2 {
+		return 0, fmt.Errorf("buffer too short to encode payload")
+	}
+	binary.BigEndian.PutUint16(buff, uint16(size))
+	total := 2
+	copy(buff[2:], value)
+	total += size
+	return total, nil
+}

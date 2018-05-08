@@ -37,3 +37,20 @@ func BenchmarkDecodeString(b *testing.B) {
 		decodeString(buff)
 	}
 }
+func TestEncodeLP(t *testing.T) {
+	buff := make([]byte, 4)
+	value := []byte("ab")
+	n, err := encodeLP(value, buff)
+	assert.Nil(t, err)
+	assert.Equal(t, 4, n)
+	assert.Equal(t, buff, []byte{0, 2, 'a', 'b'})
+}
+
+func BenchmarkEncodeLP(b *testing.B) {
+	buff := make([]byte, 4)
+	value := []byte("ab")
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		encodeLP(value, buff)
+	}
+}
