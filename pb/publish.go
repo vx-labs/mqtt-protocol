@@ -17,3 +17,16 @@ func decodePublish(p *MqttPublish, buff []byte) (int, error) {
 	p.Payload = buff[total:]
 	return len(buff), nil
 }
+
+type publishHandler func(*MqttPublish) error
+
+func PublishDecoder(fn publishHandler) func(h *MqttHeader, buffer []byte) error {
+	return func(h *MqttHeader, buffer []byte) error {
+		packet := &MqttPublish{Header: h}
+		_, err := decodePublish(packet, buffer)
+		if err != nil {
+			return err
+		}
+		return fn(packet)
+	}
+}

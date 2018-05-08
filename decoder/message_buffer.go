@@ -1,29 +1,14 @@
-package pb
+package decoder
 
 import (
 	"encoding/binary"
 	fmt "fmt"
 	"io"
 
-	"github.com/vx-labs/mqtt-protocol/types"
+	"github.com/vx-labs/mqtt-protocol/pb"
 )
 
-const (
-	Max_Packet_Size = 8092
-)
-
-func NewDecoder() *Decoder {
-	d := &Decoder{
-		buffer: make([]byte, Max_Packet_Size),
-	}
-	return d
-}
-
-type Decoder struct {
-	buffer []byte
-}
-
-func (d *Decoder) readMessageBuffer(p *MqttHeader, r io.Reader) (byte, []byte, error) {
+func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader) (byte, []byte, error) {
 	read := 0
 	for read < 1 {
 		n, err := r.Read(d.buffer[read:1])
@@ -67,21 +52,4 @@ func (d *Decoder) readMessageBuffer(p *MqttHeader, r io.Reader) (byte, []byte, e
 		read += n
 	}
 	return packetType, d.buffer[:read], nil
-}
-
-func (d *Decoder) Decode(r io.Reader) (types.Packet, error) {
-	p := &MqttHeader{}
-
-	read := 0
-	for read != 2 {
-		n, err := r.Read(d.buffer[read:2])
-		read += n
-		if err != nil {
-			return nil, err
-		}
-	}
-	d.readMessageBuffer(p, r)
-	var c types.Packet
-
-	return c, nil
 }

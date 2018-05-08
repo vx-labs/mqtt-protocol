@@ -103,3 +103,16 @@ func decodeConnect(p *MqttConnect, buff []byte) (int, error) {
 	}
 	return total, nil
 }
+
+type connectHandler func(*MqttConnect) error
+
+func ConnectDecoder(fn connectHandler) func(h *MqttHeader, buffer []byte) error {
+	return func(h *MqttHeader, buffer []byte) error {
+		packet := &MqttConnect{Header: h}
+		_, err := decodeConnect(packet, buffer)
+		if err != nil {
+			return err
+		}
+		return fn(packet)
+	}
+}

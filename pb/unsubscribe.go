@@ -36,3 +36,16 @@ func decodeUnsubscribe(p *MqttUnsubscribe, buff []byte) (int, error) {
 	}
 	return total, nil
 }
+
+type unsubscribeHandler func(*MqttUnsubscribe) error
+
+func UnsubscribeDecoder(fn unsubscribeHandler) func(h *MqttHeader, buffer []byte) error {
+	return func(h *MqttHeader, buffer []byte) error {
+		packet := &MqttUnsubscribe{Header: h}
+		_, err := decodeUnsubscribe(packet, buffer)
+		if err != nil {
+			return err
+		}
+		return fn(packet)
+	}
+}

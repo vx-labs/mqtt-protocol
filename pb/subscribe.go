@@ -40,3 +40,16 @@ func decodeSubscribe(p *MqttSubscribe, buff []byte) (int, error) {
 	}
 	return total, nil
 }
+
+type subscribeHandler func(*MqttSubscribe) error
+
+func SubscribeDecoder(fn subscribeHandler) func(h *MqttHeader, buffer []byte) error {
+	return func(h *MqttHeader, buffer []byte) error {
+		packet := &MqttSubscribe{Header: h}
+		_, err := decodeSubscribe(packet, buffer)
+		if err != nil {
+			return err
+		}
+		return fn(packet)
+	}
+}
