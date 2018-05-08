@@ -78,3 +78,10 @@ func (e *Encoder) PingResp(p *pb.MqttPingResp, buff []byte) error {
 	}
 	return e.encode(packet.PINGRESP, p.Header, 2, total, buff)
 }
+func (e *Encoder) SubAck(p *pb.MqttSubAck, buff []byte) error {
+	total, err := pb.EncodeSubAck(p, buff[4:])
+	if err != nil {
+		return err
+	}
+	return e.encode(packet.SUBACK, p.Header, 4, total, buff)
+}

@@ -110,3 +110,17 @@ func TestEncoder_PingResp(t *testing.T) {
 		[]byte{0xd0, 0x0},
 		writer.Bytes())
 }
+func TestEncoder_SubAck(t *testing.T) {
+	buff := make([]byte, 12)
+	writer := bytes.NewBuffer([]byte{})
+	e := NewEncoder(writer)
+	err := e.SubAck(&pb.MqttSubAck{
+		Header:    &pb.MqttHeader{},
+		MessageId: 12,
+		Qos:       []int32{1, 2, 1},
+	}, buff)
+	assert.Nil(t, err)
+	assert.Equal(t,
+		[]byte{0x90, 0x5, 0x0, 0xc, 0x1, 0x2, 0x1},
+		writer.Bytes())
+}
