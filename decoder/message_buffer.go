@@ -40,8 +40,8 @@ func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader) (byte, []byte
 		}
 	}
 	remlen, _ := binary.Uvarint(d.buffer[1:read])
-	if remlen > Max_Packet_Size {
-		return 0, nil, fmt.Errorf("packet size (%d) greater than max packet size (%d)", remlen, Max_Packet_Size)
+	if int(remlen) > len(d.buffer) {
+		return 0, nil, fmt.Errorf("packet size (%d) greater than max packet size (%d)", remlen, len(d.buffer))
 	}
 	read = 0
 	for read < int(remlen) {

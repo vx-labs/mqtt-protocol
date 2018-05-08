@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	Max_Packet_Size = 8192
+	Default_Buffer_Size = 8192
 )
 
 const (
@@ -46,7 +46,6 @@ func defaultPacketHandler(t string) error {
 
 func NewDecoder(opts ...decoderCreateOp) *Decoder {
 	d := Decoder{
-		buffer: make([]byte, Max_Packet_Size),
 		publishHandler: func(*pb.MqttPublish) error {
 			return defaultPacketHandler("publish")
 		},
@@ -71,6 +70,9 @@ func NewDecoder(opts ...decoderCreateOp) *Decoder {
 	}
 	for _, op := range opts {
 		d = op(d)
+	}
+	if d.buffer == nil {
+		d.buffer = make([]byte, Default_Buffer_Size)
 	}
 	d.packetDecoders = packetDecoders(&d)
 	return &d
