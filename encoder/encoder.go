@@ -12,7 +12,7 @@ type Encoder struct {
 	w io.Writer
 }
 
-func NewEncoder(w io.Writer) *Encoder {
+func New(w io.Writer) *Encoder {
 	e := &Encoder{w: w}
 	return e
 }

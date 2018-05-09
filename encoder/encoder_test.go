@@ -36,7 +36,7 @@ func BenchmarkEncoder_EncodeHeader_Long(b *testing.B) {
 func TestEncoder_Publish(t *testing.T) {
 	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
-	e := NewEncoder(writer)
+	e := New(writer)
 	err := e.Publish(&pb.MqttPublish{
 		Header: &pb.MqttHeader{
 			Qos: 1,
@@ -54,7 +54,7 @@ func TestEncoder_Publish(t *testing.T) {
 func BenchmarkEncoder_Publish(b *testing.B) {
 	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
-	e := NewEncoder(writer)
+	e := New(writer)
 	p := &pb.MqttPublish{
 		Header: &pb.MqttHeader{
 			Qos: 1,
@@ -71,7 +71,7 @@ func BenchmarkEncoder_Publish(b *testing.B) {
 func TestEncoder_PubAck(t *testing.T) {
 	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
-	e := NewEncoder(writer)
+	e := New(writer)
 	err := e.PubAck(&pb.MqttPubAck{
 		Header: &pb.MqttHeader{
 			Qos: 1,
@@ -86,7 +86,7 @@ func TestEncoder_PubAck(t *testing.T) {
 func BenchmarkEncoder_PubAck(b *testing.B) {
 	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
-	e := NewEncoder(writer)
+	e := New(writer)
 	p := &pb.MqttPubAck{
 		Header: &pb.MqttHeader{
 			Qos: 1,
@@ -101,7 +101,7 @@ func BenchmarkEncoder_PubAck(b *testing.B) {
 func TestEncoder_PingResp(t *testing.T) {
 	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
-	e := NewEncoder(writer)
+	e := New(writer)
 	err := e.PingResp(&pb.MqttPingResp{
 		Header: &pb.MqttHeader{},
 	}, buff)
@@ -113,7 +113,7 @@ func TestEncoder_PingResp(t *testing.T) {
 func TestEncoder_SubAck(t *testing.T) {
 	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
-	e := NewEncoder(writer)
+	e := New(writer)
 	err := e.SubAck(&pb.MqttSubAck{
 		Header:    &pb.MqttHeader{},
 		MessageId: 12,
@@ -127,7 +127,7 @@ func TestEncoder_SubAck(t *testing.T) {
 func TestEncoder_UnsubAck(t *testing.T) {
 	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
-	e := NewEncoder(writer)
+	e := New(writer)
 	err := e.UnsubAck(&pb.MqttUnsubAck{
 		Header:    &pb.MqttHeader{},
 		MessageId: 12,
