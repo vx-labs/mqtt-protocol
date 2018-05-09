@@ -63,6 +63,7 @@ func acceptLoop(l net.Listener) {
 
 func runSession(c net.Conn) {
 	encBuffer := make([]byte, 50*1024*1024)
+	decBuffer := make([]byte, 50*1024*1024)
 	enc := encoder.New(c)
 	keepAlive := int32(30)
 	dec := decoder.New(
@@ -121,7 +122,7 @@ func runSession(c net.Conn) {
 		defer close(decoderCh)
 		var err error
 		for {
-			err = dec.Decode(c)
+			err = dec.Decode(c, decBuffer)
 			if err == io.EOF {
 				return
 			}
@@ -135,4 +136,6 @@ func runSession(c net.Conn) {
 	select {
 	case <-decoderCh:
 	}
+	c.Close()
+	log.Printf("session closed")
 }

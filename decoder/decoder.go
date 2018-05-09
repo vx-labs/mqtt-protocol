@@ -54,9 +54,6 @@ func New(opts ...decoderCreateOp) *Decoder {
 	for _, op := range opts {
 		d = op(d)
 	}
-	if d.buffer == nil {
-		d.buffer = make([]byte, Default_Buffer_Size)
-	}
 	d.packetDecoders = packetDecoders(&d)
 	return &d
 }
@@ -64,7 +61,6 @@ func New(opts ...decoderCreateOp) *Decoder {
 type packetDecoder func(header *pb.MqttHeader, buffer []byte) error
 
 type Decoder struct {
-	buffer             []byte
 	packetDecoders     map[byte]packetDecoder
 	publishHandler     func(*pb.MqttPublish) error
 	connectHandler     func(*pb.MqttConnect) error
@@ -75,9 +71,9 @@ type Decoder struct {
 	disconnectHandler  func(*pb.MqttDisconnect) error
 }
 
-func (d *Decoder) Decode(r io.Reader) error {
+func (d *Decoder) Decode(r io.Reader, buffer []byte) error {
 	h := &pb.MqttHeader{}
-	packetType, buffer, err := d.readMessageBuffer(h, r)
+	packetType, buffer, err := d.readMessageBuffer(h, r, buffer)
 	if err != nil {
 		return err
 	}

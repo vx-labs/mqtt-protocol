@@ -10,12 +10,6 @@ func OnPublish(fn func(*pb.MqttPublish) error) decoderCreateOp {
 		return d
 	}
 }
-func WithBuffer(buff []byte) decoderCreateOp {
-	return func(d Decoder) Decoder {
-		d.buffer = buff
-		return d
-	}
-}
 
 func OnDisconnect(fn func(*pb.MqttDisconnect) error) decoderCreateOp {
 	return func(d Decoder) Decoder {

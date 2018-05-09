@@ -19,14 +19,14 @@ func readBits(r io.Reader, buff []byte) (int, error) {
 	}
 	return read, nil
 }
-func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader) (byte, []byte, error) {
+func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader, buffer []byte) (byte, []byte, error) {
 	read := 0
-	n, err := readBits(r, d.buffer[read:1])
+	n, err := readBits(r, buffer[read:1])
 	read += n
 	if err != nil {
 		return 0, nil, err
 	}
-	fixedHeader := d.buffer[0]
+	fixedHeader := buffer[0]
 	p.Retain = fixedHeader&0x1 == 0x1
 	p.Qos = int32(fixedHeader & (0x3 << 1) >> 1)
 	p.Dup = fixedHeader&(0x1<<3)>>3 == 1
@@ -36,7 +36,7 @@ func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader) (byte, []byte
 			return 0, nil, fmt.Errorf("malformed remlength")
 		}
 		cur := read
-		n, err := readBits(r, d.buffer[read:read+1])
+		n, err := readBits(r, buffer[read:read+1])
 		if n == 0 {
 			return 0, nil, fmt.Errorf("null read")
 		}
@@ -44,16 +44,16 @@ func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader) (byte, []byte
 		if err != nil {
 			return 0, nil, err
 		}
-		if d.buffer[cur] < 0x80 {
+		if buffer[cur] < 0x80 {
 			break
 		}
 	}
-	remlen, _ := binary.Uvarint(d.buffer[1:read])
-	if int(remlen) > len(d.buffer) {
-		return 0, nil, fmt.Errorf("packet size (%d) greater than max packet size (%d)", remlen, len(d.buffer))
+	remlen, _ := binary.Uvarint(buffer[1:read])
+	if int(remlen) > len(buffer) {
+		return 0, nil, fmt.Errorf("packet size (%d) greater than max packet size (%d)", remlen, len(buffer))
 	}
 	read = 0
-	n, err = readBits(r, d.buffer[0:remlen])
+	n, err = readBits(r, buffer[0:remlen])
 	read += n
-	return packetType, d.buffer[:read], nil
+	return packetType, buffer[:read], nil
 }
