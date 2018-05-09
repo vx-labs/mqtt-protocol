@@ -11,7 +11,7 @@ import (
 func TestDecoder_ReadMessageBuffer(t *testing.T) {
 	buff := []byte{0x32, 0x7, 0x0, 0x1, 'a', 0x0, 0x1, 'p', 'a'}
 	reader := bytes.NewReader(buff)
-	decoder := NewDecoder()
+	decoder := New()
 	p := &pb.MqttHeader{}
 	pType, buff, err := decoder.readMessageBuffer(p, reader)
 	assert.Nil(t, err)
@@ -26,7 +26,7 @@ func TestDecoder_ReadMessageBuffer_Long(t *testing.T) {
 		buff = append(buff, 'a')
 	}
 	reader := bytes.NewReader(buff)
-	decoder := NewDecoder()
+	decoder := New()
 	p := &pb.MqttHeader{}
 	pType, buff, err := decoder.readMessageBuffer(p, reader)
 	assert.Nil(t, err)
@@ -42,7 +42,7 @@ func BenchmarkDecoder_ReadMessageBuffer(b *testing.B) {
 		buff = append(longBuff, 'a')
 	}
 	reader := bytes.NewReader(buff)
-	d := NewDecoder()
+	d := New()
 	p := &pb.MqttHeader{}
 	b.Run("short", func(b *testing.B) {
 		b.ResetTimer()

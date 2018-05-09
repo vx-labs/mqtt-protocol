@@ -27,7 +27,7 @@ func defaultPacketHandler(t string) error {
 	return fmt.Errorf("unhandled %s packet", t)
 }
 
-func NewDecoder(opts ...decoderCreateOp) *Decoder {
+func New(opts ...decoderCreateOp) *Decoder {
 	d := Decoder{
 		publishHandler: func(*pb.MqttPublish) error {
 			return defaultPacketHandler("publish")

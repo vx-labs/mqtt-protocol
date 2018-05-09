@@ -16,7 +16,7 @@ func TestDecoder_Decode(t *testing.T) {
 		buff = append(buff, 'a')
 	}
 	reader := bytes.NewReader(buff)
-	decoder := NewDecoder(OnPublish(func(m *pb.MqttPublish) error { return nil }))
+	decoder := New(OnPublish(func(m *pb.MqttPublish) error { return nil }))
 	err := decoder.Decode(reader)
 	assert.Nil(t, err)
 }
@@ -29,7 +29,7 @@ func BenchmarkDecoder_Decode(b *testing.B) {
 		buff = append(longBuff, 'a')
 	}
 	reader := bytes.NewReader(buff)
-	d := NewDecoder()
+	d := New()
 	b.Run("short", func(b *testing.B) {
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
