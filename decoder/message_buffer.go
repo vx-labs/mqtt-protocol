@@ -8,14 +8,23 @@ import (
 	"github.com/vx-labs/mqtt-protocol/pb"
 )
 
-func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader) (byte, []byte, error) {
+func readBits(r io.Reader, buff []byte) (int, error) {
 	read := 0
-	for read < 1 {
-		n, err := r.Read(d.buffer[read:1])
+	for read < len(buff) {
+		n, err := r.Read(buff[read:])
 		read += n
 		if err != nil {
-			return 0, nil, err
+			return read, err
 		}
+	}
+	return read, nil
+}
+func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader) (byte, []byte, error) {
+	read := 0
+	n, err := readBits(r, d.buffer[read:1])
+	read += n
+	if err != nil {
+		return 0, nil, err
 	}
 	fixedHeader := d.buffer[0]
 	p.Retain = fixedHeader&0x1 == 0x1
@@ -27,7 +36,7 @@ func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader) (byte, []byte
 			return 0, nil, fmt.Errorf("malformed remlength")
 		}
 		cur := read
-		n, err := r.Read(d.buffer[read : read+1])
+		n, err := readBits(r, d.buffer[read:read+1])
 		if n == 0 {
 			return 0, nil, fmt.Errorf("null read")
 		}
@@ -44,12 +53,7 @@ func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader) (byte, []byte
 		return 0, nil, fmt.Errorf("packet size (%d) greater than max packet size (%d)", remlen, len(d.buffer))
 	}
 	read = 0
-	for read < int(remlen) {
-		n, err := r.Read(d.buffer[0:])
-		if err != nil {
-			return 0, nil, err
-		}
-		read += n
-	}
+	n, err = readBits(r, d.buffer[0:remlen])
+	read += n
 	return packetType, d.buffer[:read], nil
 }
