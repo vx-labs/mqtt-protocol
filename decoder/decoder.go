@@ -71,9 +71,9 @@ type Decoder struct {
 	disconnectHandler  func(*pb.MqttDisconnect) error
 }
 
-func (d *Decoder) Decode(r io.Reader, buffer []byte) error {
+func (d *Decoder) Decode(r io.Reader) error {
 	h := &pb.MqttHeader{}
-	packetType, buffer, err := d.readMessageBuffer(h, r, buffer)
+	packetType, buffer, err := d.readMessageBuffer(h, r)
 	if err != nil {
 		return err
 	}
