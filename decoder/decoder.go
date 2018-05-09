@@ -20,6 +20,7 @@ func packetDecoders(d *Decoder) map[byte]packetDecoder {
 		packet.UNSUBSCRIBE: pb.UnsubscribeDecoder(d.unsubscribeHandler),
 		packet.PINGREQ:     pb.PingReqDecoder(d.pingReqHandler),
 		packet.DISCONNECT:  pb.DisconnectDecoder(d.disconnectHandler),
+		packet.PUBACK:      pb.PubAckDecoder(d.pubAckHandler),
 	}
 }
 
