@@ -16,6 +16,8 @@ const (
 	CONNECT_FLAG_USERNAME
 )
 
+const DefaultKeepalive int32 = 30
+
 func isSet(b byte, mask byte) bool {
 	return b&mask == mask
 }
@@ -60,7 +62,11 @@ func decodeConnect(p *MqttConnect, buff []byte) (int, error) {
 
 	keepalive := binary.BigEndian.Uint16(buff[total:])
 	total += 2
-	p.KeepaliveTimer = int32(keepalive)
+	if keepalive > 0 {
+		p.KeepaliveTimer = int32(keepalive)
+	} else {
+		p.KeepaliveTimer = DefaultKeepalive
+	}
 	clientId, n, err := decodeLP(buff[total:])
 	total += n
 	if err != nil {
