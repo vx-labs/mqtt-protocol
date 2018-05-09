@@ -30,3 +30,6 @@ func EncodePubAck(p *MqttPubAck, buff []byte) (int, error) {
 	binary.BigEndian.PutUint16(buff, uint16(p.MessageId))
 	return 2, nil
 }
+func PubAckLength(p *MqttPubAck) int {
+	return 2
+}

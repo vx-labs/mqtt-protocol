@@ -12,3 +12,6 @@ func EncodeSubAck(p *MqttSubAck, buff []byte) (int, error) {
 	}
 	return total, nil
 }
+func SubAckLength(p *MqttSubAck) int {
+	return 2 + len(p.Qos)
+}

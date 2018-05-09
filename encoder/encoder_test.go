@@ -34,7 +34,6 @@ func BenchmarkEncoder_EncodeHeader_Long(b *testing.B) {
 }
 
 func TestEncoder_Publish(t *testing.T) {
-	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
 	e := New(writer)
 	err := e.Publish(&pb.MqttPublish{
@@ -44,7 +43,7 @@ func TestEncoder_Publish(t *testing.T) {
 		MessageId: 1,
 		Topic:     []byte("a"),
 		Payload:   []byte("pa"),
-	}, buff)
+	})
 	assert.Nil(t, err)
 	assert.Equal(t,
 		[]byte{0x32, 0x7, 0x0, 0x1, 'a', 0x0, 0x1, 'p', 'a'},
@@ -52,7 +51,6 @@ func TestEncoder_Publish(t *testing.T) {
 }
 
 func BenchmarkEncoder_Publish(b *testing.B) {
-	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
 	e := New(writer)
 	p := &pb.MqttPublish{
@@ -65,11 +63,10 @@ func BenchmarkEncoder_Publish(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		e.Publish(p, buff)
+		e.Publish(p)
 	}
 }
 func TestEncoder_PubAck(t *testing.T) {
-	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
 	e := New(writer)
 	err := e.PubAck(&pb.MqttPubAck{
@@ -77,14 +74,13 @@ func TestEncoder_PubAck(t *testing.T) {
 			Qos: 1,
 		},
 		MessageId: 9,
-	}, buff)
+	})
 	assert.Nil(t, err)
 	assert.Equal(t,
 		[]byte{0x42, 0x2, 0x0, 0x9},
 		writer.Bytes())
 }
 func BenchmarkEncoder_PubAck(b *testing.B) {
-	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
 	e := New(writer)
 	p := &pb.MqttPubAck{
@@ -95,58 +91,64 @@ func BenchmarkEncoder_PubAck(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		e.PubAck(p, buff)
+		e.PubAck(p)
 	}
 }
 func TestEncoder_PingResp(t *testing.T) {
-	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
 	e := New(writer)
 	err := e.PingResp(&pb.MqttPingResp{
 		Header: &pb.MqttHeader{},
-	}, buff)
+	})
 	assert.Nil(t, err)
 	assert.Equal(t,
 		[]byte{0xd0, 0x0},
 		writer.Bytes())
 }
 func TestEncoder_SubAck(t *testing.T) {
-	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
 	e := New(writer)
 	err := e.SubAck(&pb.MqttSubAck{
 		Header:    &pb.MqttHeader{},
 		MessageId: 12,
 		Qos:       []int32{1, 2, 1},
-	}, buff)
+	})
 	assert.Nil(t, err)
 	assert.Equal(t,
 		[]byte{0x90, 0x5, 0x0, 0xc, 0x1, 0x2, 0x1},
 		writer.Bytes())
 }
 func TestEncoder_UnsubAck(t *testing.T) {
-	buff := make([]byte, 12)
 	writer := bytes.NewBuffer([]byte{})
 	e := New(writer)
 	err := e.UnsubAck(&pb.MqttUnsubAck{
 		Header:    &pb.MqttHeader{},
 		MessageId: 12,
-	}, buff)
+	})
 	assert.Nil(t, err)
 	assert.Equal(t,
 		[]byte{0xb0, 0x2, 0x0, 0xc},
 		writer.Bytes())
 }
 func TestEncoder_ConnAck(t *testing.T) {
-	buff := make([]byte, 4)
 	writer := bytes.NewBuffer([]byte{})
 	e := New(writer)
 	err := e.ConnAck(&pb.MqttConnAck{
 		Header:     &pb.MqttHeader{},
 		ReturnCode: pb.CONNACK_REFUSED_BAD_USERNAME_OR_PASSWORD,
-	}, buff)
+	})
 	assert.Nil(t, err)
 	assert.Equal(t,
 		[]byte{0x20, 0x2, 0x0, 0x4},
 		writer.Bytes())
+}
+
+func TestEncoder_RemLength(t *testing.T) {
+	assert.Equal(t, 1, remLengthBits(0))
+	assert.Equal(t, 2, remLengthBits(129))
+}
+func BenchmarkEncoder_RemLength(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		remLengthBits(129)
+	}
 }

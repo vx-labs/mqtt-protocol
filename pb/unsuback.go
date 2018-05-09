@@ -30,3 +30,7 @@ func EncodeUnsubAck(p *MqttUnsubAck, buff []byte) (int, error) {
 	binary.BigEndian.PutUint16(buff, uint16(p.MessageId))
 	return 2, nil
 }
+
+func UnsubAckLength(p *MqttUnsubAck) int {
+	return 2
+}

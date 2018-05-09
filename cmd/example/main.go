@@ -62,7 +62,6 @@ func acceptLoop(l net.Listener) {
 }
 
 func runSession(c net.Conn) {
-	encBuffer := make([]byte, 50*1024*1024)
 	enc := encoder.New(c)
 	keepAlive := int32(30)
 	dec := decoder.New(
@@ -75,7 +74,7 @@ func runSession(c net.Conn) {
 			enc.ConnAck(&pb.MqttConnAck{
 				Header:     p.Header,
 				ReturnCode: pb.CONNACK_CONNECTION_ACCEPTED,
-			}, encBuffer)
+			})
 			return nil
 		}),
 		decoder.OnPublish(func(p *pb.MqttPublish) error {
@@ -86,7 +85,7 @@ func runSession(c net.Conn) {
 				return enc.PubAck(&pb.MqttPubAck{
 					Header:    p.Header,
 					MessageId: p.MessageId,
-				}, encBuffer)
+				})
 			}
 			return nil
 		}),
@@ -97,7 +96,7 @@ func runSession(c net.Conn) {
 			return enc.SubAck(&pb.MqttSubAck{
 				Header:    p.Header,
 				MessageId: p.MessageId,
-			}, encBuffer)
+			})
 		}),
 		decoder.OnUnsubscribe(func(p *pb.MqttUnsubscribe) error { return nil }),
 		decoder.OnPubAck(func(*pb.MqttPubAck) error { return nil }),
@@ -107,7 +106,7 @@ func runSession(c net.Conn) {
 			)
 			return enc.PingResp(&pb.MqttPingResp{
 				Header: p.Header,
-			}, encBuffer)
+			})
 		}),
 		decoder.OnDisconnect(func(p *pb.MqttDisconnect) error {
 			return io.EOF

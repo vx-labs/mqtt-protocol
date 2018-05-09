@@ -16,3 +16,7 @@ func DisconnectDecoder(fn disconnectHandler) func(h *MqttHeader, buffer []byte) 
 		return fn(packet)
 	}
 }
+
+func DisconnectLength(p *MqttDisconnect) int {
+	return 0
+}

@@ -89,3 +89,15 @@ func BenchmarkPublish_Encode_QoS0(b *testing.B) {
 		EncodePublish(p, buff)
 	}
 }
+
+func BenchmarkPublish_Length(b *testing.B) {
+	p := &MqttPublish{
+		Header:    &MqttHeader{Qos: 1},
+		Topic:     []byte("a"),
+		Payload:   []byte{1, 2, 3},
+		MessageId: 9,
+	}
+	for i := 0; i < b.N; i++ {
+		PublishLength(p)
+	}
+}

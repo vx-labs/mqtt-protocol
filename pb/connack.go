@@ -21,3 +21,6 @@ func EncodeConnAck(p *MqttConnAck, buff []byte) (int, error) {
 	buff[1] = byte(p.ReturnCode)
 	return 2, nil
 }
+func ConnAckLength(p *MqttConnAck) int {
+	return 2
+}

@@ -19,3 +19,6 @@ func PingRespDecoder(fn pingRespHandler) func(h *MqttHeader, buffer []byte) erro
 func EncodePingResp(p *MqttPingResp, buff []byte) (int, error) {
 	return 0, nil
 }
+func PingRespLength(p *MqttPingResp) int {
+	return 0
+}
