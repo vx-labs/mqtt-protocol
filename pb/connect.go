@@ -16,6 +16,10 @@ const (
 	CONNECT_FLAG_USERNAME
 )
 
+var supportedProtocolVersions = map[int]string{
+	3: "MQIsdp",
+}
+
 const DefaultKeepalive int32 = 30
 
 func isSet(b byte, mask byte) bool {
@@ -47,13 +51,14 @@ func decodeConnect(p *MqttConnect, buff []byte) (int, error) {
 		return n, err
 	}
 	total += n
-	if string(protocolName) != "MQIsdp" {
-		return total, fmt.Errorf("unsupported protocol")
-	}
 	protocolVersion := int(buff[total])
 	total++
-	if protocolVersion != 3 {
+
+	if name, ok := supportedProtocolVersions[protocolVersion]; !ok {
 		return total, fmt.Errorf("unsupported mqtt version")
+		if name != string(protocolName) {
+			return total, fmt.Errorf("unsupported protocol name")
+		}
 	}
 	flags := buff[total]
 
