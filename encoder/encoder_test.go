@@ -137,3 +137,16 @@ func TestEncoder_UnsubAck(t *testing.T) {
 		[]byte{0xb0, 0x2, 0x0, 0xc},
 		writer.Bytes())
 }
+func TestEncoder_ConnAck(t *testing.T) {
+	buff := make([]byte, 4)
+	writer := bytes.NewBuffer([]byte{})
+	e := New(writer)
+	err := e.ConnAck(&pb.MqttConnAck{
+		Header:     &pb.MqttHeader{},
+		ReturnCode: pb.CONNACK_REFUSED_BAD_USERNAME_OR_PASSWORD,
+	}, buff)
+	assert.Nil(t, err)
+	assert.Equal(t,
+		[]byte{0xb0, 0x2, 0x0, 0x4},
+		writer.Bytes())
+}

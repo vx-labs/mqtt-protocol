@@ -92,3 +92,10 @@ func (e *Encoder) UnsubAck(p *pb.MqttUnsubAck, buff []byte) error {
 	}
 	return e.encode(packet.UNSUBACK, p.Header, 4, total, buff)
 }
+func (e *Encoder) ConnAck(p *pb.MqttConnAck, buff []byte) error {
+	total, err := pb.EncodeConnAck(p, buff[2:])
+	if err != nil {
+		return err
+	}
+	return e.encode(packet.UNSUBACK, p.Header, 2, total, buff)
+}
