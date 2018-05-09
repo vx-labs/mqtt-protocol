@@ -26,7 +26,7 @@ func (e *Encoder) flush(buff []byte) error {
 	}
 	return nil
 }
-func (e *Encoder) encode(packetType byte, header *packet.MqttHeader, boundary, total int, buff []byte) error {
+func (e *Encoder) encode(packetType byte, header *packet.Header, boundary, total int, buff []byte) error {
 	n, err := encodeHeader(packetType, header, total, buff[:boundary])
 	total += n
 	if err != nil {
@@ -39,7 +39,7 @@ func (e *Encoder) encode(packetType byte, header *packet.MqttHeader, boundary, t
 	return e.flush(buff[:total])
 }
 
-func encodeHeader(packetType byte, header *packet.MqttHeader, remLength int, buff []byte) (int, error) {
+func encodeHeader(packetType byte, header *packet.Header, remLength int, buff []byte) (int, error) {
 	var dup, qos, retain byte
 	if header.Dup {
 		dup = 1
@@ -65,7 +65,7 @@ func remLengthBits(size int) int {
 	return value
 }
 
-func (e *Encoder) Publish(p *packet.MqttPublish) error {
+func (e *Encoder) Publish(p *packet.Publish) error {
 	length := packet.PublishLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
@@ -75,7 +75,7 @@ func (e *Encoder) Publish(p *packet.MqttPublish) error {
 	}
 	return e.encode(packet.PUBLISH, p.Header, headerLength, total, buffer)
 }
-func (e *Encoder) PubAck(p *packet.MqttPubAck) error {
+func (e *Encoder) PubAck(p *packet.PubAck) error {
 	length := packet.PubAckLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
@@ -86,7 +86,7 @@ func (e *Encoder) PubAck(p *packet.MqttPubAck) error {
 	}
 	return e.encode(packet.PUBACK, p.Header, headerLength, total, buffer)
 }
-func (e *Encoder) PingResp(p *packet.MqttPingResp) error {
+func (e *Encoder) PingResp(p *packet.PingResp) error {
 	length := packet.PingRespLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
@@ -97,7 +97,7 @@ func (e *Encoder) PingResp(p *packet.MqttPingResp) error {
 	}
 	return e.encode(packet.PINGRESP, p.Header, headerLength, total, buffer)
 }
-func (e *Encoder) SubAck(p *packet.MqttSubAck) error {
+func (e *Encoder) SubAck(p *packet.SubAck) error {
 	length := packet.SubAckLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
@@ -108,7 +108,7 @@ func (e *Encoder) SubAck(p *packet.MqttSubAck) error {
 	}
 	return e.encode(packet.SUBACK, p.Header, headerLength, total, buffer)
 }
-func (e *Encoder) UnsubAck(p *packet.MqttUnsubAck) error {
+func (e *Encoder) UnsubAck(p *packet.UnsubAck) error {
 	length := packet.UnsubAckLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
@@ -119,7 +119,7 @@ func (e *Encoder) UnsubAck(p *packet.MqttUnsubAck) error {
 	}
 	return e.encode(packet.UNSUBACK, p.Header, headerLength, total, buffer)
 }
-func (e *Encoder) ConnAck(p *packet.MqttConnAck) error {
+func (e *Encoder) ConnAck(p *packet.ConnAck) error {
 	length := packet.ConnAckLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)

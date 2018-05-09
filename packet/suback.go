@@ -2,7 +2,7 @@ package packet
 
 import "encoding/binary"
 
-func EncodeSubAck(p *MqttSubAck, buff []byte) (int, error) {
+func EncodeSubAck(p *SubAck, buff []byte) (int, error) {
 	total := 0
 	binary.BigEndian.PutUint16(buff, uint16(p.MessageId))
 	total += 2
@@ -12,6 +12,6 @@ func EncodeSubAck(p *MqttSubAck, buff []byte) (int, error) {
 	}
 	return total, nil
 }
-func SubAckLength(p *MqttSubAck) int {
+func SubAckLength(p *SubAck) int {
 	return 2 + len(p.Qos)
 }

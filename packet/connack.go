@@ -13,7 +13,7 @@ const (
 	CONNACK_REFUSED_NOT_AUTHORIZED
 )
 
-func EncodeConnAck(p *MqttConnAck, buff []byte) (int, error) {
+func EncodeConnAck(p *ConnAck, buff []byte) (int, error) {
 	if len(buff) < 2 {
 		return 0, errors.New("buffer to short to encode connack")
 	}
@@ -21,6 +21,6 @@ func EncodeConnAck(p *MqttConnAck, buff []byte) (int, error) {
 	buff[1] = byte(p.ReturnCode)
 	return 2, nil
 }
-func ConnAckLength(p *MqttConnAck) int {
+func ConnAckLength(p *ConnAck) int {
 	return 2
 }

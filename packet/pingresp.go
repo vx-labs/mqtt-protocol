@@ -1,14 +1,14 @@
 package packet
 
-func decodePingResp(p *MqttPingResp, buff []byte) (int, error) {
+func decodePingResp(p *PingResp, buff []byte) (int, error) {
 	return 0, nil
 }
 
-type pingRespHandler func(*MqttPingResp) error
+type pingRespHandler func(*PingResp) error
 
-func PingRespDecoder(fn pingRespHandler) func(h *MqttHeader, buffer []byte) error {
-	return func(h *MqttHeader, buffer []byte) error {
-		packet := &MqttPingResp{Header: h}
+func PingRespDecoder(fn pingRespHandler) func(h *Header, buffer []byte) error {
+	return func(h *Header, buffer []byte) error {
+		packet := &PingResp{Header: h}
 		_, err := decodePingResp(packet, buffer)
 		if err != nil {
 			return err
@@ -16,9 +16,9 @@ func PingRespDecoder(fn pingRespHandler) func(h *MqttHeader, buffer []byte) erro
 		return fn(packet)
 	}
 }
-func EncodePingResp(p *MqttPingResp, buff []byte) (int, error) {
+func EncodePingResp(p *PingResp, buff []byte) (int, error) {
 	return 0, nil
 }
-func PingRespLength(p *MqttPingResp) int {
+func PingRespLength(p *PingResp) int {
 	return 0
 }

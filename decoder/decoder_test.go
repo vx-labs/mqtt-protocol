@@ -16,7 +16,7 @@ func TestDecoder_Decode(t *testing.T) {
 		buff = append(buff, 'a')
 	}
 	reader := bytes.NewReader(buff)
-	decoder := New(OnPublish(func(m *packet.MqttPublish) error { return nil }))
+	decoder := New(OnPublish(func(m *packet.Publish) error { return nil }))
 	err := decoder.Decode(reader)
 	assert.Nil(t, err)
 }

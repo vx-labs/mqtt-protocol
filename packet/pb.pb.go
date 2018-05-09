@@ -8,18 +8,18 @@ It is generated from these files:
 	pb.proto
 
 It has these top-level messages:
-	MqttHeader
-	MqttConnect
-	MqttConnAck
-	MqttDisconnect
-	MqttPublish
-	MqttPubAck
-	MqttSubscribe
-	MqttSubAck
-	MqttUnsubscribe
-	MqttUnsubAck
-	MqttPingReq
-	MqttPingResp
+	Header
+	Connect
+	ConnAck
+	Disconnect
+	Publish
+	PubAck
+	Subscribe
+	SubAck
+	Unsubscribe
+	UnsubAck
+	PingReq
+	PingResp
 */
 package packet
 
@@ -38,400 +38,400 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type MqttHeader struct {
+type Header struct {
 	Dup    bool  `protobuf:"varint,1,opt,name=dup" json:"dup,omitempty"`
 	Qos    int32 `protobuf:"varint,2,opt,name=qos" json:"qos,omitempty"`
 	Retain bool  `protobuf:"varint,3,opt,name=retain" json:"retain,omitempty"`
 }
 
-func (m *MqttHeader) Reset()                    { *m = MqttHeader{} }
-func (m *MqttHeader) String() string            { return proto.CompactTextString(m) }
-func (*MqttHeader) ProtoMessage()               {}
-func (*MqttHeader) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (m *Header) Reset()                    { *m = Header{} }
+func (m *Header) String() string            { return proto.CompactTextString(m) }
+func (*Header) ProtoMessage()               {}
+func (*Header) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-func (m *MqttHeader) GetDup() bool {
+func (m *Header) GetDup() bool {
 	if m != nil {
 		return m.Dup
 	}
 	return false
 }
 
-func (m *MqttHeader) GetQos() int32 {
+func (m *Header) GetQos() int32 {
 	if m != nil {
 		return m.Qos
 	}
 	return 0
 }
 
-func (m *MqttHeader) GetRetain() bool {
+func (m *Header) GetRetain() bool {
 	if m != nil {
 		return m.Retain
 	}
 	return false
 }
 
-type MqttConnect struct {
-	Header         *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-	Id             string      `protobuf:"bytes,2,opt,name=id" json:"id,omitempty"`
-	Clean          bool        `protobuf:"varint,3,opt,name=clean" json:"clean,omitempty"`
-	ClientId       []byte      `protobuf:"bytes,4,opt,name=clientId,proto3" json:"clientId,omitempty"`
-	Username       []byte      `protobuf:"bytes,5,opt,name=username,proto3" json:"username,omitempty"`
-	Password       []byte      `protobuf:"bytes,6,opt,name=password,proto3" json:"password,omitempty"`
-	WillTopic      []byte      `protobuf:"bytes,7,opt,name=willTopic,proto3" json:"willTopic,omitempty"`
-	WillPayload    []byte      `protobuf:"bytes,8,opt,name=willPayload,proto3" json:"willPayload,omitempty"`
-	WillQos        int32       `protobuf:"varint,9,opt,name=willQos" json:"willQos,omitempty"`
-	WillRetain     bool        `protobuf:"varint,10,opt,name=willRetain" json:"willRetain,omitempty"`
-	KeepaliveTimer int32       `protobuf:"varint,11,opt,name=keepaliveTimer" json:"keepaliveTimer,omitempty"`
+type Connect struct {
+	Header         *Header `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Id             string  `protobuf:"bytes,2,opt,name=id" json:"id,omitempty"`
+	Clean          bool    `protobuf:"varint,3,opt,name=clean" json:"clean,omitempty"`
+	ClientId       []byte  `protobuf:"bytes,4,opt,name=clientId,proto3" json:"clientId,omitempty"`
+	Username       []byte  `protobuf:"bytes,5,opt,name=username,proto3" json:"username,omitempty"`
+	Password       []byte  `protobuf:"bytes,6,opt,name=password,proto3" json:"password,omitempty"`
+	WillTopic      []byte  `protobuf:"bytes,7,opt,name=willTopic,proto3" json:"willTopic,omitempty"`
+	WillPayload    []byte  `protobuf:"bytes,8,opt,name=willPayload,proto3" json:"willPayload,omitempty"`
+	WillQos        int32   `protobuf:"varint,9,opt,name=willQos" json:"willQos,omitempty"`
+	WillRetain     bool    `protobuf:"varint,10,opt,name=willRetain" json:"willRetain,omitempty"`
+	KeepaliveTimer int32   `protobuf:"varint,11,opt,name=keepaliveTimer" json:"keepaliveTimer,omitempty"`
 }
 
-func (m *MqttConnect) Reset()                    { *m = MqttConnect{} }
-func (m *MqttConnect) String() string            { return proto.CompactTextString(m) }
-func (*MqttConnect) ProtoMessage()               {}
-func (*MqttConnect) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+func (m *Connect) Reset()                    { *m = Connect{} }
+func (m *Connect) String() string            { return proto.CompactTextString(m) }
+func (*Connect) ProtoMessage()               {}
+func (*Connect) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
-func (m *MqttConnect) GetHeader() *MqttHeader {
+func (m *Connect) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *MqttConnect) GetId() string {
+func (m *Connect) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-func (m *MqttConnect) GetClean() bool {
+func (m *Connect) GetClean() bool {
 	if m != nil {
 		return m.Clean
 	}
 	return false
 }
 
-func (m *MqttConnect) GetClientId() []byte {
+func (m *Connect) GetClientId() []byte {
 	if m != nil {
 		return m.ClientId
 	}
 	return nil
 }
 
-func (m *MqttConnect) GetUsername() []byte {
+func (m *Connect) GetUsername() []byte {
 	if m != nil {
 		return m.Username
 	}
 	return nil
 }
 
-func (m *MqttConnect) GetPassword() []byte {
+func (m *Connect) GetPassword() []byte {
 	if m != nil {
 		return m.Password
 	}
 	return nil
 }
 
-func (m *MqttConnect) GetWillTopic() []byte {
+func (m *Connect) GetWillTopic() []byte {
 	if m != nil {
 		return m.WillTopic
 	}
 	return nil
 }
 
-func (m *MqttConnect) GetWillPayload() []byte {
+func (m *Connect) GetWillPayload() []byte {
 	if m != nil {
 		return m.WillPayload
 	}
 	return nil
 }
 
-func (m *MqttConnect) GetWillQos() int32 {
+func (m *Connect) GetWillQos() int32 {
 	if m != nil {
 		return m.WillQos
 	}
 	return 0
 }
 
-func (m *MqttConnect) GetWillRetain() bool {
+func (m *Connect) GetWillRetain() bool {
 	if m != nil {
 		return m.WillRetain
 	}
 	return false
 }
 
-func (m *MqttConnect) GetKeepaliveTimer() int32 {
+func (m *Connect) GetKeepaliveTimer() int32 {
 	if m != nil {
 		return m.KeepaliveTimer
 	}
 	return 0
 }
 
-type MqttConnAck struct {
-	Header     *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-	ReturnCode int32       `protobuf:"varint,2,opt,name=returnCode" json:"returnCode,omitempty"`
+type ConnAck struct {
+	Header     *Header `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	ReturnCode int32   `protobuf:"varint,2,opt,name=returnCode" json:"returnCode,omitempty"`
 }
 
-func (m *MqttConnAck) Reset()                    { *m = MqttConnAck{} }
-func (m *MqttConnAck) String() string            { return proto.CompactTextString(m) }
-func (*MqttConnAck) ProtoMessage()               {}
-func (*MqttConnAck) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+func (m *ConnAck) Reset()                    { *m = ConnAck{} }
+func (m *ConnAck) String() string            { return proto.CompactTextString(m) }
+func (*ConnAck) ProtoMessage()               {}
+func (*ConnAck) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
-func (m *MqttConnAck) GetHeader() *MqttHeader {
+func (m *ConnAck) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *MqttConnAck) GetReturnCode() int32 {
+func (m *ConnAck) GetReturnCode() int32 {
 	if m != nil {
 		return m.ReturnCode
 	}
 	return 0
 }
 
-type MqttDisconnect struct {
-	Header *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-	Id     string      `protobuf:"bytes,2,opt,name=id" json:"id,omitempty"`
+type Disconnect struct {
+	Header *Header `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	Id     string  `protobuf:"bytes,2,opt,name=id" json:"id,omitempty"`
 }
 
-func (m *MqttDisconnect) Reset()                    { *m = MqttDisconnect{} }
-func (m *MqttDisconnect) String() string            { return proto.CompactTextString(m) }
-func (*MqttDisconnect) ProtoMessage()               {}
-func (*MqttDisconnect) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+func (m *Disconnect) Reset()                    { *m = Disconnect{} }
+func (m *Disconnect) String() string            { return proto.CompactTextString(m) }
+func (*Disconnect) ProtoMessage()               {}
+func (*Disconnect) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
 
-func (m *MqttDisconnect) GetHeader() *MqttHeader {
+func (m *Disconnect) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *MqttDisconnect) GetId() string {
+func (m *Disconnect) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-type MqttPublish struct {
-	Header    *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-	MessageId int32       `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
-	Topic     []byte      `protobuf:"bytes,3,opt,name=topic,proto3" json:"topic,omitempty"`
-	Payload   []byte      `protobuf:"bytes,4,opt,name=payload,proto3" json:"payload,omitempty"`
+type Publish struct {
+	Header    *Header `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	MessageId int32   `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
+	Topic     []byte  `protobuf:"bytes,3,opt,name=topic,proto3" json:"topic,omitempty"`
+	Payload   []byte  `protobuf:"bytes,4,opt,name=payload,proto3" json:"payload,omitempty"`
 }
 
-func (m *MqttPublish) Reset()                    { *m = MqttPublish{} }
-func (m *MqttPublish) String() string            { return proto.CompactTextString(m) }
-func (*MqttPublish) ProtoMessage()               {}
-func (*MqttPublish) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+func (m *Publish) Reset()                    { *m = Publish{} }
+func (m *Publish) String() string            { return proto.CompactTextString(m) }
+func (*Publish) ProtoMessage()               {}
+func (*Publish) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
 
-func (m *MqttPublish) GetHeader() *MqttHeader {
+func (m *Publish) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *MqttPublish) GetMessageId() int32 {
+func (m *Publish) GetMessageId() int32 {
 	if m != nil {
 		return m.MessageId
 	}
 	return 0
 }
 
-func (m *MqttPublish) GetTopic() []byte {
+func (m *Publish) GetTopic() []byte {
 	if m != nil {
 		return m.Topic
 	}
 	return nil
 }
 
-func (m *MqttPublish) GetPayload() []byte {
+func (m *Publish) GetPayload() []byte {
 	if m != nil {
 		return m.Payload
 	}
 	return nil
 }
 
-type MqttPubAck struct {
-	Header    *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-	MessageId int32       `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
+type PubAck struct {
+	Header    *Header `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	MessageId int32   `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
 }
 
-func (m *MqttPubAck) Reset()                    { *m = MqttPubAck{} }
-func (m *MqttPubAck) String() string            { return proto.CompactTextString(m) }
-func (*MqttPubAck) ProtoMessage()               {}
-func (*MqttPubAck) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+func (m *PubAck) Reset()                    { *m = PubAck{} }
+func (m *PubAck) String() string            { return proto.CompactTextString(m) }
+func (*PubAck) ProtoMessage()               {}
+func (*PubAck) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
 
-func (m *MqttPubAck) GetHeader() *MqttHeader {
+func (m *PubAck) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *MqttPubAck) GetMessageId() int32 {
+func (m *PubAck) GetMessageId() int32 {
 	if m != nil {
 		return m.MessageId
 	}
 	return 0
 }
 
-type MqttSubscribe struct {
-	Header    *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-	MessageId int32       `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
-	Topic     [][]byte    `protobuf:"bytes,3,rep,name=topic,proto3" json:"topic,omitempty"`
-	Qos       []int32     `protobuf:"varint,4,rep,packed,name=qos" json:"qos,omitempty"`
+type Subscribe struct {
+	Header    *Header  `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	MessageId int32    `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
+	Topic     [][]byte `protobuf:"bytes,3,rep,name=topic,proto3" json:"topic,omitempty"`
+	Qos       []int32  `protobuf:"varint,4,rep,packed,name=qos" json:"qos,omitempty"`
 }
 
-func (m *MqttSubscribe) Reset()                    { *m = MqttSubscribe{} }
-func (m *MqttSubscribe) String() string            { return proto.CompactTextString(m) }
-func (*MqttSubscribe) ProtoMessage()               {}
-func (*MqttSubscribe) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
+func (m *Subscribe) Reset()                    { *m = Subscribe{} }
+func (m *Subscribe) String() string            { return proto.CompactTextString(m) }
+func (*Subscribe) ProtoMessage()               {}
+func (*Subscribe) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
 
-func (m *MqttSubscribe) GetHeader() *MqttHeader {
+func (m *Subscribe) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *MqttSubscribe) GetMessageId() int32 {
+func (m *Subscribe) GetMessageId() int32 {
 	if m != nil {
 		return m.MessageId
 	}
 	return 0
 }
 
-func (m *MqttSubscribe) GetTopic() [][]byte {
+func (m *Subscribe) GetTopic() [][]byte {
 	if m != nil {
 		return m.Topic
 	}
 	return nil
 }
 
-func (m *MqttSubscribe) GetQos() []int32 {
+func (m *Subscribe) GetQos() []int32 {
 	if m != nil {
 		return m.Qos
 	}
 	return nil
 }
 
-type MqttSubAck struct {
-	Header    *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-	MessageId int32       `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
-	Qos       []int32     `protobuf:"varint,3,rep,packed,name=qos" json:"qos,omitempty"`
+type SubAck struct {
+	Header    *Header `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	MessageId int32   `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
+	Qos       []int32 `protobuf:"varint,3,rep,packed,name=qos" json:"qos,omitempty"`
 }
 
-func (m *MqttSubAck) Reset()                    { *m = MqttSubAck{} }
-func (m *MqttSubAck) String() string            { return proto.CompactTextString(m) }
-func (*MqttSubAck) ProtoMessage()               {}
-func (*MqttSubAck) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
+func (m *SubAck) Reset()                    { *m = SubAck{} }
+func (m *SubAck) String() string            { return proto.CompactTextString(m) }
+func (*SubAck) ProtoMessage()               {}
+func (*SubAck) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
 
-func (m *MqttSubAck) GetHeader() *MqttHeader {
+func (m *SubAck) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *MqttSubAck) GetMessageId() int32 {
+func (m *SubAck) GetMessageId() int32 {
 	if m != nil {
 		return m.MessageId
 	}
 	return 0
 }
 
-func (m *MqttSubAck) GetQos() []int32 {
+func (m *SubAck) GetQos() []int32 {
 	if m != nil {
 		return m.Qos
 	}
 	return nil
 }
 
-type MqttUnsubscribe struct {
-	Header    *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-	MessageId int32       `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
-	Topic     [][]byte    `protobuf:"bytes,3,rep,name=topic,proto3" json:"topic,omitempty"`
+type Unsubscribe struct {
+	Header    *Header  `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	MessageId int32    `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
+	Topic     [][]byte `protobuf:"bytes,3,rep,name=topic,proto3" json:"topic,omitempty"`
 }
 
-func (m *MqttUnsubscribe) Reset()                    { *m = MqttUnsubscribe{} }
-func (m *MqttUnsubscribe) String() string            { return proto.CompactTextString(m) }
-func (*MqttUnsubscribe) ProtoMessage()               {}
-func (*MqttUnsubscribe) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+func (m *Unsubscribe) Reset()                    { *m = Unsubscribe{} }
+func (m *Unsubscribe) String() string            { return proto.CompactTextString(m) }
+func (*Unsubscribe) ProtoMessage()               {}
+func (*Unsubscribe) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
 
-func (m *MqttUnsubscribe) GetHeader() *MqttHeader {
+func (m *Unsubscribe) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *MqttUnsubscribe) GetMessageId() int32 {
+func (m *Unsubscribe) GetMessageId() int32 {
 	if m != nil {
 		return m.MessageId
 	}
 	return 0
 }
 
-func (m *MqttUnsubscribe) GetTopic() [][]byte {
+func (m *Unsubscribe) GetTopic() [][]byte {
 	if m != nil {
 		return m.Topic
 	}
 	return nil
 }
 
-type MqttUnsubAck struct {
-	Header    *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-	MessageId int32       `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
+type UnsubAck struct {
+	Header    *Header `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+	MessageId int32   `protobuf:"varint,2,opt,name=messageId" json:"messageId,omitempty"`
 }
 
-func (m *MqttUnsubAck) Reset()                    { *m = MqttUnsubAck{} }
-func (m *MqttUnsubAck) String() string            { return proto.CompactTextString(m) }
-func (*MqttUnsubAck) ProtoMessage()               {}
-func (*MqttUnsubAck) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+func (m *UnsubAck) Reset()                    { *m = UnsubAck{} }
+func (m *UnsubAck) String() string            { return proto.CompactTextString(m) }
+func (*UnsubAck) ProtoMessage()               {}
+func (*UnsubAck) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
 
-func (m *MqttUnsubAck) GetHeader() *MqttHeader {
+func (m *UnsubAck) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *MqttUnsubAck) GetMessageId() int32 {
+func (m *UnsubAck) GetMessageId() int32 {
 	if m != nil {
 		return m.MessageId
 	}
 	return 0
 }
 
-type MqttPingReq struct {
-	Header *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+type PingReq struct {
+	Header *Header `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 }
 
-func (m *MqttPingReq) Reset()                    { *m = MqttPingReq{} }
-func (m *MqttPingReq) String() string            { return proto.CompactTextString(m) }
-func (*MqttPingReq) ProtoMessage()               {}
-func (*MqttPingReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
+func (m *PingReq) Reset()                    { *m = PingReq{} }
+func (m *PingReq) String() string            { return proto.CompactTextString(m) }
+func (*PingReq) ProtoMessage()               {}
+func (*PingReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
 
-func (m *MqttPingReq) GetHeader() *MqttHeader {
+func (m *PingReq) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-type MqttPingResp struct {
-	Header *MqttHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
+type PingResp struct {
+	Header *Header `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 }
 
-func (m *MqttPingResp) Reset()                    { *m = MqttPingResp{} }
-func (m *MqttPingResp) String() string            { return proto.CompactTextString(m) }
-func (*MqttPingResp) ProtoMessage()               {}
-func (*MqttPingResp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
+func (m *PingResp) Reset()                    { *m = PingResp{} }
+func (m *PingResp) String() string            { return proto.CompactTextString(m) }
+func (*PingResp) ProtoMessage()               {}
+func (*PingResp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
 
-func (m *MqttPingResp) GetHeader() *MqttHeader {
+func (m *PingResp) GetHeader() *Header {
 	if m != nil {
 		return m.Header
 	}
@@ -439,51 +439,50 @@ func (m *MqttPingResp) GetHeader() *MqttHeader {
 }
 
 func init() {
-	proto.RegisterType((*MqttHeader)(nil), "packet.MqttHeader")
-	proto.RegisterType((*MqttConnect)(nil), "packet.MqttConnect")
-	proto.RegisterType((*MqttConnAck)(nil), "packet.MqttConnAck")
-	proto.RegisterType((*MqttDisconnect)(nil), "packet.MqttDisconnect")
-	proto.RegisterType((*MqttPublish)(nil), "packet.MqttPublish")
-	proto.RegisterType((*MqttPubAck)(nil), "packet.MqttPubAck")
-	proto.RegisterType((*MqttSubscribe)(nil), "packet.MqttSubscribe")
-	proto.RegisterType((*MqttSubAck)(nil), "packet.MqttSubAck")
-	proto.RegisterType((*MqttUnsubscribe)(nil), "packet.MqttUnsubscribe")
-	proto.RegisterType((*MqttUnsubAck)(nil), "packet.MqttUnsubAck")
-	proto.RegisterType((*MqttPingReq)(nil), "packet.MqttPingReq")
-	proto.RegisterType((*MqttPingResp)(nil), "packet.MqttPingResp")
+	proto.RegisterType((*Header)(nil), "packet.Header")
+	proto.RegisterType((*Connect)(nil), "packet.Connect")
+	proto.RegisterType((*ConnAck)(nil), "packet.ConnAck")
+	proto.RegisterType((*Disconnect)(nil), "packet.Disconnect")
+	proto.RegisterType((*Publish)(nil), "packet.Publish")
+	proto.RegisterType((*PubAck)(nil), "packet.PubAck")
+	proto.RegisterType((*Subscribe)(nil), "packet.Subscribe")
+	proto.RegisterType((*SubAck)(nil), "packet.SubAck")
+	proto.RegisterType((*Unsubscribe)(nil), "packet.Unsubscribe")
+	proto.RegisterType((*UnsubAck)(nil), "packet.UnsubAck")
+	proto.RegisterType((*PingReq)(nil), "packet.PingReq")
+	proto.RegisterType((*PingResp)(nil), "packet.PingResp")
 }
 
 func init() { proto.RegisterFile("pb.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 464 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x54, 0xcf, 0x6f, 0xd3, 0x30,
-	0x14, 0x56, 0x9a, 0xb5, 0x6b, 0x5f, 0x47, 0x41, 0x16, 0x42, 0x16, 0x9a, 0xa6, 0xc8, 0x07, 0x54,
-	0x71, 0xe8, 0x01, 0x4e, 0x70, 0x43, 0xe3, 0xb0, 0x49, 0x20, 0x95, 0x6c, 0x20, 0x38, 0x3a, 0xf1,
-	0xd3, 0x6a, 0x35, 0x8d, 0x5d, 0xdb, 0x61, 0xe2, 0xc8, 0x89, 0xbf, 0x90, 0xff, 0x07, 0xd9, 0x4e,
-	0x96, 0x8a, 0x03, 0x52, 0xc4, 0xe0, 0xe6, 0xef, 0x7b, 0xf1, 0xf7, 0xbd, 0x5f, 0x0e, 0x4c, 0x75,
-	0xb1, 0xd2, 0x46, 0x39, 0x45, 0x26, 0x9a, 0x97, 0x5b, 0x74, 0xec, 0x02, 0xe0, 0xfd, 0xde, 0xb9,
-	0x0b, 0xe4, 0x02, 0x0d, 0x79, 0x04, 0xa9, 0x68, 0x34, 0x4d, 0xb2, 0x64, 0x39, 0xcd, 0xfd, 0xd1,
-	0x33, 0x7b, 0x65, 0xe9, 0x28, 0x4b, 0x96, 0xe3, 0xdc, 0x1f, 0xc9, 0x13, 0x98, 0x18, 0x74, 0x5c,
-	0xd6, 0x34, 0x0d, 0x9f, 0xb5, 0x88, 0xfd, 0x1c, 0xc1, 0xdc, 0x4b, 0x9d, 0xab, 0xba, 0xc6, 0xd2,
-	0x91, 0xe7, 0x30, 0xd9, 0x04, 0xd5, 0x20, 0x37, 0x7f, 0x41, 0x56, 0xd1, 0x72, 0xd5, 0xfb, 0xe5,
-	0xed, 0x17, 0x64, 0x01, 0x23, 0x29, 0x82, 0xc9, 0x2c, 0x1f, 0x49, 0x41, 0x1e, 0xc3, 0xb8, 0xac,
-	0x90, 0x77, 0x16, 0x11, 0x90, 0xa7, 0x30, 0x2d, 0x2b, 0x89, 0xb5, 0xbb, 0x14, 0xf4, 0x28, 0x4b,
-	0x96, 0x27, 0xf9, 0x1d, 0xf6, 0xb1, 0xc6, 0xa2, 0xa9, 0xf9, 0x0e, 0xe9, 0x38, 0xc6, 0x3a, 0xec,
-	0x63, 0x9a, 0x5b, 0x7b, 0xab, 0x8c, 0xa0, 0x93, 0x18, 0xeb, 0x30, 0x39, 0x85, 0xd9, 0xad, 0xac,
-	0xaa, 0x6b, 0xa5, 0x65, 0x49, 0x8f, 0x43, 0xb0, 0x27, 0x48, 0x06, 0x73, 0x0f, 0xd6, 0xfc, 0x5b,
-	0xa5, 0xb8, 0xa0, 0xd3, 0x10, 0x3f, 0xa4, 0x08, 0x85, 0x63, 0x0f, 0x3f, 0x28, 0x4b, 0x67, 0xa1,
-	0x47, 0x1d, 0x24, 0x67, 0x00, 0xfe, 0x98, 0xc7, 0x5e, 0x41, 0x28, 0xe4, 0x80, 0x21, 0xcf, 0x60,
-	0xb1, 0x45, 0xd4, 0xbc, 0x92, 0x5f, 0xf1, 0x5a, 0xee, 0xd0, 0xd0, 0x79, 0x10, 0xf8, 0x8d, 0x65,
-	0x5f, 0xfa, 0xb6, 0xbe, 0x29, 0xb7, 0x83, 0xda, 0x7a, 0x06, 0x60, 0xd0, 0x35, 0xa6, 0x3e, 0x57,
-	0x02, 0xdb, 0x19, 0x1e, 0x30, 0xec, 0x1d, 0x2c, 0xfc, 0xad, 0xb7, 0xd2, 0x96, 0x7f, 0x3f, 0x34,
-	0xf6, 0x23, 0x89, 0x99, 0xae, 0x9b, 0xa2, 0x92, 0x76, 0x33, 0x48, 0xeb, 0x14, 0x66, 0x3b, 0xb4,
-	0x96, 0xdf, 0xe0, 0xa5, 0x68, 0x13, 0xed, 0x09, 0xbf, 0x0e, 0x2e, 0x0c, 0x28, 0x0d, 0x03, 0x88,
-	0xc0, 0xb7, 0x5e, 0xb7, 0x83, 0x89, 0xdb, 0xd0, 0x41, 0xf6, 0x29, 0x2e, 0xf5, 0xba, 0x29, 0x86,
-	0x76, 0xec, 0x8f, 0x79, 0xb0, 0xef, 0x09, 0x3c, 0xf0, 0x97, 0xae, 0x9a, 0xc2, 0x96, 0x46, 0x16,
-	0xf8, 0x6f, 0x6a, 0x4c, 0xfb, 0x1a, 0xdb, 0xe7, 0x77, 0x94, 0xa5, 0xed, 0xf3, 0x63, 0x9b, 0x58,
-	0xdb, 0xd5, 0x3d, 0xd7, 0xd6, 0x39, 0xa5, 0xbd, 0xd3, 0x1e, 0x1e, 0x7a, 0x95, 0x8f, 0xb5, 0xfd,
-	0x5f, 0xe5, 0xb2, 0xcf, 0x70, 0x72, 0x67, 0x79, 0xbf, 0xa3, 0x7b, 0xd5, 0xee, 0xa6, 0xac, 0x6f,
-	0x72, 0xdc, 0x0f, 0x11, 0x66, 0xaf, 0x63, 0x52, 0xf1, 0xaa, 0xd5, 0x43, 0xee, 0x16, 0x93, 0xf0,
-	0xb7, 0x7d, 0xf9, 0x2b, 0x00, 0x00, 0xff, 0xff, 0xac, 0x31, 0x6a, 0xf0, 0x79, 0x05, 0x00, 0x00,
+	// 442 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x54, 0xcf, 0x6b, 0xdb, 0x30,
+	0x18, 0x25, 0x71, 0xe3, 0x1f, 0x5f, 0x46, 0x18, 0x62, 0x0c, 0x31, 0x4a, 0x31, 0x3a, 0x94, 0x9c,
+	0x02, 0xeb, 0xfe, 0x82, 0xd1, 0x1c, 0xd6, 0xcb, 0x70, 0xdd, 0xee, 0x3e, 0xd9, 0xfa, 0x68, 0x45,
+	0x1c, 0x4b, 0x95, 0xec, 0x95, 0x9e, 0xf6, 0x17, 0xee, 0x7f, 0x1a, 0x92, 0xec, 0x25, 0xec, 0x30,
+	0x3c, 0x16, 0x76, 0xd3, 0x7b, 0x2f, 0x7a, 0x5f, 0xbe, 0xf7, 0x90, 0x21, 0xd5, 0xd5, 0x46, 0x1b,
+	0xd5, 0x29, 0x12, 0x6b, 0x5e, 0xef, 0xb0, 0x63, 0x5b, 0x88, 0x3f, 0x21, 0x17, 0x68, 0xc8, 0x6b,
+	0x88, 0x44, 0xaf, 0xe9, 0x2c, 0x9f, 0xad, 0xd3, 0xd2, 0x1d, 0x1d, 0xf3, 0xa4, 0x2c, 0x9d, 0xe7,
+	0xb3, 0xf5, 0xa2, 0x74, 0x47, 0xf2, 0x16, 0x62, 0x83, 0x1d, 0x97, 0x2d, 0x8d, 0xfc, 0xcf, 0x06,
+	0xc4, 0x7e, 0xcc, 0x21, 0xb9, 0x56, 0x6d, 0x8b, 0x75, 0x47, 0x2e, 0x21, 0x7e, 0xf4, 0x8e, 0xde,
+	0x6a, 0x79, 0xb5, 0xda, 0x84, 0x51, 0x9b, 0x30, 0xa7, 0x1c, 0x54, 0xb2, 0x82, 0xb9, 0x14, 0xde,
+	0x3c, 0x2b, 0xe7, 0x52, 0x90, 0x37, 0xb0, 0xa8, 0x1b, 0xe4, 0xa3, 0x75, 0x00, 0xe4, 0x1d, 0xa4,
+	0x75, 0x23, 0xb1, 0xed, 0x6e, 0x04, 0x3d, 0xcb, 0x67, 0xeb, 0x57, 0xe5, 0x2f, 0xec, 0xb4, 0xde,
+	0xa2, 0x69, 0xf9, 0x1e, 0xe9, 0x22, 0x68, 0x23, 0x76, 0x9a, 0xe6, 0xd6, 0x3e, 0x2b, 0x23, 0x68,
+	0x1c, 0xb4, 0x11, 0x93, 0x73, 0xc8, 0x9e, 0x65, 0xd3, 0xdc, 0x2b, 0x2d, 0x6b, 0x9a, 0x78, 0xf1,
+	0x40, 0x90, 0x1c, 0x96, 0x0e, 0x14, 0xfc, 0xa5, 0x51, 0x5c, 0xd0, 0xd4, 0xeb, 0xc7, 0x14, 0xa1,
+	0x90, 0x38, 0x78, 0xab, 0x2c, 0xcd, 0x7c, 0x36, 0x23, 0x24, 0x17, 0x00, 0xee, 0x58, 0x86, 0x8c,
+	0xc0, 0x2f, 0x72, 0xc4, 0x90, 0x4b, 0x58, 0xed, 0x10, 0x35, 0x6f, 0xe4, 0x37, 0xbc, 0x97, 0x7b,
+	0x34, 0x74, 0xe9, 0x0d, 0x7e, 0x63, 0xd9, 0x6d, 0x88, 0xf3, 0x63, 0xbd, 0x9b, 0x1c, 0xe7, 0x05,
+	0x80, 0xc1, 0xae, 0x37, 0xed, 0xb5, 0x12, 0x38, 0x74, 0x76, 0xc4, 0xb0, 0x2d, 0xc0, 0x56, 0xda,
+	0xfa, 0xdf, 0x4a, 0x62, 0xdf, 0x21, 0x29, 0xfa, 0xaa, 0x91, 0xf6, 0x71, 0xb2, 0xc5, 0x39, 0x64,
+	0x7b, 0xb4, 0x96, 0x3f, 0xe0, 0x8d, 0x18, 0xfe, 0xd7, 0x81, 0x70, 0xad, 0x77, 0xbe, 0x87, 0xc8,
+	0xe7, 0x1c, 0x80, 0x4b, 0x58, 0x0f, 0xf9, 0x87, 0xd2, 0x47, 0xc8, 0x3e, 0x43, 0x5c, 0xf4, 0xd5,
+	0xdf, 0x04, 0xf3, 0xc7, 0xf9, 0xec, 0x05, 0xb2, 0xbb, 0xbe, 0xb2, 0xb5, 0x91, 0x15, 0x9e, 0x7e,
+	0xa5, 0xe8, 0xb0, 0xd2, 0xf0, 0x98, 0xce, 0xf2, 0x68, 0x78, 0x4c, 0xec, 0x2b, 0xc4, 0x77, 0x27,
+	0x5c, 0x65, 0x9c, 0x10, 0x1d, 0x26, 0x48, 0x58, 0x7e, 0x69, 0xed, 0xff, 0x58, 0x8f, 0x15, 0x90,
+	0xfa, 0x51, 0xa7, 0x6b, 0xe6, 0x3d, 0x24, 0x85, 0x6c, 0x1f, 0x4a, 0x7c, 0x9a, 0x6a, 0xc8, 0xae,
+	0x20, 0x0d, 0x57, 0xac, 0x9e, 0x7a, 0xa7, 0x8a, 0xfd, 0xf7, 0xf0, 0xc3, 0xcf, 0x00, 0x00, 0x00,
+	0xff, 0xff, 0x40, 0xe5, 0xb5, 0x00, 0x1b, 0x05, 0x00, 0x00,
 }

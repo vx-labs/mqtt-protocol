@@ -16,7 +16,7 @@ func countUnsubscribeTopics(buff []byte) (count int, err error) {
 	}
 }
 
-func decodeUnsubscribe(p *MqttUnsubscribe, buff []byte) (int, error) {
+func decodeUnsubscribe(p *Unsubscribe, buff []byte) (int, error) {
 	p.MessageId = int32(binary.BigEndian.Uint16(buff))
 	total := 2
 	length, err := countUnsubscribeTopics(buff[total:])
@@ -37,11 +37,11 @@ func decodeUnsubscribe(p *MqttUnsubscribe, buff []byte) (int, error) {
 	return total, nil
 }
 
-type unsubscribeHandler func(*MqttUnsubscribe) error
+type unsubscribeHandler func(*Unsubscribe) error
 
-func UnsubscribeDecoder(fn unsubscribeHandler) func(h *MqttHeader, buffer []byte) error {
-	return func(h *MqttHeader, buffer []byte) error {
-		packet := &MqttUnsubscribe{Header: h}
+func UnsubscribeDecoder(fn unsubscribeHandler) func(h *Header, buffer []byte) error {
+	return func(h *Header, buffer []byte) error {
+		packet := &Unsubscribe{Header: h}
 		_, err := decodeUnsubscribe(packet, buffer)
 		if err != nil {
 			return err

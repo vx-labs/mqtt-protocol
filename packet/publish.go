@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func decodePublish(p *MqttPublish, buff []byte) (int, error) {
+func decodePublish(p *Publish, buff []byte) (int, error) {
 	topic, n, err := decodeLP(buff)
 	total := n
 	if err != nil {
@@ -20,14 +20,14 @@ func decodePublish(p *MqttPublish, buff []byte) (int, error) {
 	p.Payload = buff[total:]
 	return len(buff), nil
 }
-func PublishLength(p *MqttPublish) int {
+func PublishLength(p *Publish) int {
 	length := len(p.Payload) + 2 + len(p.Topic)
 	if p.Header.Qos > 0 {
 		length += 2
 	}
 	return length
 }
-func EncodePublish(p *MqttPublish, buff []byte) (int, error) {
+func EncodePublish(p *Publish, buff []byte) (int, error) {
 	total := 0
 	n, err := encodeLP(p.Topic, buff)
 	total += n
@@ -49,11 +49,11 @@ func EncodePublish(p *MqttPublish, buff []byte) (int, error) {
 	return total, nil
 }
 
-type publishHandler func(*MqttPublish) error
+type publishHandler func(*Publish) error
 
-func PublishDecoder(fn publishHandler) func(h *MqttHeader, buffer []byte) error {
-	return func(h *MqttHeader, buffer []byte) error {
-		packet := &MqttPublish{Header: h}
+func PublishDecoder(fn publishHandler) func(h *Header, buffer []byte) error {
+	return func(h *Header, buffer []byte) error {
+		packet := &Publish{Header: h}
 		_, err := decodePublish(packet, buffer)
 		if err != nil {
 			return err

@@ -45,7 +45,7 @@ func willQoS(b byte) byte {
 	return (b & CONNECT_FLAG_WILL_QOS) >> 3
 }
 
-func decodeConnect(p *MqttConnect, buff []byte) (int, error) {
+func decodeConnect(p *Connect, buff []byte) (int, error) {
 	total := 0
 	protocolName, n, err := decodeLP(buff)
 	if err != nil {
@@ -116,11 +116,11 @@ func decodeConnect(p *MqttConnect, buff []byte) (int, error) {
 	return total, nil
 }
 
-type connectHandler func(*MqttConnect) error
+type connectHandler func(*Connect) error
 
-func ConnectDecoder(fn connectHandler) func(h *MqttHeader, buffer []byte) error {
-	return func(h *MqttHeader, buffer []byte) error {
-		packet := &MqttConnect{Header: h}
+func ConnectDecoder(fn connectHandler) func(h *Header, buffer []byte) error {
+	return func(h *Header, buffer []byte) error {
+		packet := &Connect{Header: h}
 		_, err := decodeConnect(packet, buffer)
 		if err != nil {
 			return err

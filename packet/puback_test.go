@@ -10,7 +10,7 @@ func TestPubAck_Decode(t *testing.T) {
 	buff := []byte{
 		0x0, 0x1,
 	}
-	p := &MqttPubAck{}
+	p := &PubAck{}
 	n, err := decodePubAck(p, buff)
 	assert.Equal(t, 2, n)
 	assert.Equal(t, int32(1), p.MessageId)
@@ -20,7 +20,7 @@ func BenchmarkPubAck_Decode(b *testing.B) {
 	buff := []byte{
 		0x0, 0x1,
 	}
-	p := &MqttPubAck{}
+	p := &PubAck{}
 	for i := 0; i < b.N; i++ {
 		decodePubAck(p, buff)
 	}
@@ -28,8 +28,8 @@ func BenchmarkPubAck_Decode(b *testing.B) {
 
 func TestPubAck_Encode(t *testing.T) {
 	buff := make([]byte, 2)
-	p := &MqttPubAck{
-		Header:    &MqttHeader{Qos: 1},
+	p := &PubAck{
+		Header:    &Header{Qos: 1},
 		MessageId: 9,
 	}
 	n, err := EncodePubAck(p, buff)
@@ -39,8 +39,8 @@ func TestPubAck_Encode(t *testing.T) {
 }
 func BenchmarkPubAck_Encode(b *testing.B) {
 	buff := make([]byte, 2)
-	p := &MqttPubAck{
-		Header:    &MqttHeader{Qos: 1},
+	p := &PubAck{
+		Header:    &Header{Qos: 1},
 		MessageId: 9,
 	}
 	b.ResetTimer()

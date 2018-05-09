@@ -16,7 +16,7 @@ func countSubscribeTopics(buff []byte) (count int, err error) {
 	}
 }
 
-func decodeSubscribe(p *MqttSubscribe, buff []byte) (int, error) {
+func decodeSubscribe(p *Subscribe, buff []byte) (int, error) {
 	p.MessageId = int32(binary.BigEndian.Uint16(buff))
 	total := 2
 	length, err := countSubscribeTopics(buff[total:])
@@ -41,11 +41,11 @@ func decodeSubscribe(p *MqttSubscribe, buff []byte) (int, error) {
 	return total, nil
 }
 
-type subscribeHandler func(*MqttSubscribe) error
+type subscribeHandler func(*Subscribe) error
 
-func SubscribeDecoder(fn subscribeHandler) func(h *MqttHeader, buffer []byte) error {
-	return func(h *MqttHeader, buffer []byte) error {
-		packet := &MqttSubscribe{Header: h}
+func SubscribeDecoder(fn subscribeHandler) func(h *Header, buffer []byte) error {
+	return func(h *Header, buffer []byte) error {
+		packet := &Subscribe{Header: h}
 		_, err := decodeSubscribe(packet, buffer)
 		if err != nil {
 			return err

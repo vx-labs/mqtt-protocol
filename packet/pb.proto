@@ -1,12 +1,12 @@
 syntax = "proto3";
 package packet;
-message MqttHeader {
+message Header {
 	bool dup = 1;
 	int32 qos = 2;
 	bool retain = 3;
 }
-message MqttConnect {
-    MqttHeader header =1;
+message Connect {
+    Header header =1;
     string id = 2;
     bool clean = 3;
     bytes clientId = 4;
@@ -18,54 +18,54 @@ message MqttConnect {
     bool willRetain = 10;
     int32 keepaliveTimer = 11;
 };
-message MqttConnAck {
-    MqttHeader header = 1;
+message ConnAck {
+    Header header = 1;
     int32 returnCode = 2;
 };
 
-message MqttDisconnect {
-    MqttHeader header =1;
+message Disconnect {
+    Header header =1;
     string id = 2;
 };
 
-message MqttPublish {
-    MqttHeader header =1;
+message Publish {
+    Header header =1;
     int32 messageId = 2;
     bytes topic = 3;
     bytes payload = 4;
 };
 
-message MqttPubAck {
-    MqttHeader header =1;
+message PubAck {
+    Header header =1;
     int32 messageId = 2;
 };
 
-message MqttSubscribe {
-    MqttHeader header =1;
+message Subscribe {
+    Header header =1;
     int32 messageId = 2;
     repeated bytes topic = 3;
     repeated int32 qos = 4;
 };
-message MqttSubAck {
-    MqttHeader header =1;
+message SubAck {
+    Header header =1;
     int32 messageId = 2;
     repeated int32 qos = 3;
 };
 
-message MqttUnsubscribe {
-    MqttHeader header =1;
+message Unsubscribe {
+    Header header =1;
     int32 messageId = 2;
     repeated bytes topic = 3;
 };
-message MqttUnsubAck {
-    MqttHeader header =1;
+message UnsubAck {
+    Header header =1;
     int32 messageId = 2;
 };
 
-message MqttPingReq {
-    MqttHeader header =1;
+message PingReq {
+    Header header =1;
 };
 
-message MqttPingResp {
-    MqttHeader header =1;
+message PingResp {
+    Header header =1;
 };

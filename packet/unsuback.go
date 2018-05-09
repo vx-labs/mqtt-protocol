@@ -5,16 +5,16 @@ import (
 	"errors"
 )
 
-func decodeUnsubAck(p *MqttUnsubAck, buff []byte) (int, error) {
+func decodeUnsubAck(p *UnsubAck, buff []byte) (int, error) {
 	p.MessageId = int32(binary.BigEndian.Uint16(buff))
 	return 2, nil
 }
 
-type unsubAckHandler func(*MqttUnsubAck) error
+type unsubAckHandler func(*UnsubAck) error
 
-func UnsubAckDecoder(fn unsubAckHandler) func(h *MqttHeader, buffer []byte) error {
-	return func(h *MqttHeader, buffer []byte) error {
-		packet := &MqttUnsubAck{Header: h}
+func UnsubAckDecoder(fn unsubAckHandler) func(h *Header, buffer []byte) error {
+	return func(h *Header, buffer []byte) error {
+		packet := &UnsubAck{Header: h}
 		_, err := decodeUnsubAck(packet, buffer)
 		if err != nil {
 			return err
@@ -23,7 +23,7 @@ func UnsubAckDecoder(fn unsubAckHandler) func(h *MqttHeader, buffer []byte) erro
 	}
 }
 
-func EncodeUnsubAck(p *MqttUnsubAck, buff []byte) (int, error) {
+func EncodeUnsubAck(p *UnsubAck, buff []byte) (int, error) {
 	if len(buff) < 2 {
 		return 0, errors.New("buffer to short to encode message id")
 	}
@@ -31,6 +31,6 @@ func EncodeUnsubAck(p *MqttUnsubAck, buff []byte) (int, error) {
 	return 2, nil
 }
 
-func UnsubAckLength(p *MqttUnsubAck) int {
+func UnsubAckLength(p *UnsubAck) int {
 	return 2
 }

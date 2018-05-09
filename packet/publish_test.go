@@ -8,8 +8,8 @@ import (
 
 func TestPublish_Decode_QoS0(t *testing.T) {
 	b := []byte{0x0, 0x1, 'a', 0x1, 0x2, 0x3}
-	p := &MqttPublish{
-		Header: &MqttHeader{Qos: 0},
+	p := &Publish{
+		Header: &Header{Qos: 0},
 	}
 	n, err := decodePublish(p, b)
 	assert.Nil(t, err)
@@ -19,8 +19,8 @@ func TestPublish_Decode_QoS0(t *testing.T) {
 }
 func TestPublish_Decode_QoS1(t *testing.T) {
 	b := []byte{0x0, 0x1, 'a', 0x0, 0x1, 0x1, 0x2, 0x3}
-	p := &MqttPublish{
-		Header: &MqttHeader{Qos: 1},
+	p := &Publish{
+		Header: &Header{Qos: 1},
 	}
 	n, err := decodePublish(p, b)
 	assert.Nil(t, err)
@@ -31,8 +31,8 @@ func TestPublish_Decode_QoS1(t *testing.T) {
 }
 func BenchmarkPublish_Decode_QoS0(b *testing.B) {
 	buff := []byte{0x0, 0x1, 'a', 0x1, 0x2, 0x3}
-	p := &MqttPublish{
-		Header: &MqttHeader{Qos: 0},
+	p := &Publish{
+		Header: &Header{Qos: 0},
 	}
 
 	b.ResetTimer()
@@ -42,8 +42,8 @@ func BenchmarkPublish_Decode_QoS0(b *testing.B) {
 }
 func BenchmarkPublish_Decode_QoS1(b *testing.B) {
 	buff := []byte{0x0, 0x1, 'a', 0x0, 0x1, 0x1, 0x2, 0x3}
-	p := &MqttPublish{
-		Header: &MqttHeader{Qos: 1},
+	p := &Publish{
+		Header: &Header{Qos: 1},
 	}
 
 	b.ResetTimer()
@@ -53,8 +53,8 @@ func BenchmarkPublish_Decode_QoS1(b *testing.B) {
 }
 func TestPublish_Encode_QoS0(t *testing.T) {
 	buff := make([]byte, 6)
-	p := &MqttPublish{
-		Header:  &MqttHeader{Qos: 0},
+	p := &Publish{
+		Header:  &Header{Qos: 0},
 		Topic:   []byte("a"),
 		Payload: []byte{1, 2, 3},
 	}
@@ -65,8 +65,8 @@ func TestPublish_Encode_QoS0(t *testing.T) {
 }
 func TestPublish_Encode_QoS1(t *testing.T) {
 	buff := make([]byte, 8)
-	p := &MqttPublish{
-		Header:    &MqttHeader{Qos: 1},
+	p := &Publish{
+		Header:    &Header{Qos: 1},
 		Topic:     []byte("a"),
 		Payload:   []byte{1, 2, 3},
 		MessageId: 9,
@@ -78,8 +78,8 @@ func TestPublish_Encode_QoS1(t *testing.T) {
 }
 func BenchmarkPublish_Encode_QoS0(b *testing.B) {
 	buff := make([]byte, 8)
-	p := &MqttPublish{
-		Header:    &MqttHeader{Qos: 1},
+	p := &Publish{
+		Header:    &Header{Qos: 1},
 		Topic:     []byte("a"),
 		Payload:   []byte{1, 2, 3},
 		MessageId: 9,
@@ -91,8 +91,8 @@ func BenchmarkPublish_Encode_QoS0(b *testing.B) {
 }
 
 func BenchmarkPublish_Length(b *testing.B) {
-	p := &MqttPublish{
-		Header:    &MqttHeader{Qos: 1},
+	p := &Publish{
+		Header:    &Header{Qos: 1},
 		Topic:     []byte("a"),
 		Payload:   []byte{1, 2, 3},
 		MessageId: 9,

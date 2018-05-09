@@ -65,50 +65,50 @@ func runSession(c net.Conn) {
 	enc := encoder.New(c)
 	keepAlive := int32(30)
 	dec := decoder.New(
-		decoder.OnConnect(func(p *packet.MqttConnect) error {
+		decoder.OnConnect(func(p *packet.Connect) error {
 			log.Printf("received CONNECT from %s", p.ClientId)
 			keepAlive = p.KeepaliveTimer
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			enc.ConnAck(&packet.MqttConnAck{
+			enc.ConnAck(&packet.ConnAck{
 				Header:     p.Header,
 				ReturnCode: packet.CONNACK_CONNECTION_ACCEPTED,
 			})
 			return nil
 		}),
-		decoder.OnPublish(func(p *packet.MqttPublish) error {
+		decoder.OnPublish(func(p *packet.Publish) error {
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
 			if p.Header.Qos == 1 {
-				return enc.PubAck(&packet.MqttPubAck{
+				return enc.PubAck(&packet.PubAck{
 					Header:    p.Header,
 					MessageId: p.MessageId,
 				})
 			}
 			return nil
 		}),
-		decoder.OnSubscribe(func(p *packet.MqttSubscribe) error {
+		decoder.OnSubscribe(func(p *packet.Subscribe) error {
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			return enc.SubAck(&packet.MqttSubAck{
+			return enc.SubAck(&packet.SubAck{
 				Header:    p.Header,
 				MessageId: p.MessageId,
 			})
 		}),
-		decoder.OnUnsubscribe(func(p *packet.MqttUnsubscribe) error { return nil }),
-		decoder.OnPubAck(func(*packet.MqttPubAck) error { return nil }),
-		decoder.OnPingReq(func(p *packet.MqttPingReq) error {
+		decoder.OnUnsubscribe(func(p *packet.Unsubscribe) error { return nil }),
+		decoder.OnPubAck(func(*packet.PubAck) error { return nil }),
+		decoder.OnPingReq(func(p *packet.PingReq) error {
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			return enc.PingResp(&packet.MqttPingResp{
+			return enc.PingResp(&packet.PingResp{
 				Header: p.Header,
 			})
 		}),
-		decoder.OnDisconnect(func(p *packet.MqttDisconnect) error {
+		decoder.OnDisconnect(func(p *packet.Disconnect) error {
 			return io.EOF
 		}),
 	)

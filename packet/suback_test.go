@@ -8,8 +8,8 @@ import (
 
 func TestSuback_Encode(t *testing.T) {
 	buff := make([]byte, 10)
-	packet := &MqttSubAck{
-		Header:    &MqttHeader{},
+	packet := &SubAck{
+		Header:    &Header{},
 		MessageId: 9,
 		Qos:       []int32{1, 0, 2, 1},
 	}
@@ -19,8 +19,8 @@ func TestSuback_Encode(t *testing.T) {
 }
 func BenchmarkSuback_Encode(b *testing.B) {
 	buff := make([]byte, 10)
-	packet := &MqttSubAck{
-		Header:    &MqttHeader{},
+	packet := &SubAck{
+		Header:    &Header{},
 		MessageId: 9,
 		Qos:       []int32{1, 0, 2, 1},
 	}

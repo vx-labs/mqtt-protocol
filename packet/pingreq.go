@@ -1,14 +1,14 @@
 package packet
 
-func decodePingReq(p *MqttPingReq, buff []byte) (int, error) {
+func decodePingReq(p *PingReq, buff []byte) (int, error) {
 	return 0, nil
 }
 
-type pingReqHandler func(*MqttPingReq) error
+type pingReqHandler func(*PingReq) error
 
-func PingReqDecoder(fn pingReqHandler) func(h *MqttHeader, buffer []byte) error {
-	return func(h *MqttHeader, buffer []byte) error {
-		packet := &MqttPingReq{Header: h}
+func PingReqDecoder(fn pingReqHandler) func(h *Header, buffer []byte) error {
+	return func(h *Header, buffer []byte) error {
+		packet := &PingReq{Header: h}
 		_, err := decodePingReq(packet, buffer)
 		if err != nil {
 			return err

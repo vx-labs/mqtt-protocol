@@ -12,7 +12,7 @@ func TestSubscribe_Decode(t *testing.T) {
 		0x0, 0x2, 'a', 'b',
 		0x1,
 	}
-	p := &MqttSubscribe{}
+	p := &Subscribe{}
 	n, err := decodeSubscribe(p, buff)
 	assert.Equal(t, 7, n)
 	assert.Nil(t, err)
@@ -46,7 +46,7 @@ func BenchmarkSubscribe_Decode(b *testing.B) {
 		0x0, 0x2, 'a', 'b',
 		0x1,
 	}
-	p := &MqttSubscribe{}
+	p := &Subscribe{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		decodeSubscribe(p, buff)

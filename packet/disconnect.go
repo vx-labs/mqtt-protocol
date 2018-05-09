@@ -1,14 +1,14 @@
 package packet
 
-func decodeDisconnect(p *MqttDisconnect, buff []byte) (int, error) {
+func decodeDisconnect(p *Disconnect, buff []byte) (int, error) {
 	return 0, nil
 }
 
-type disconnectHandler func(*MqttDisconnect) error
+type disconnectHandler func(*Disconnect) error
 
-func DisconnectDecoder(fn disconnectHandler) func(h *MqttHeader, buffer []byte) error {
-	return func(h *MqttHeader, buffer []byte) error {
-		packet := &MqttDisconnect{Header: h}
+func DisconnectDecoder(fn disconnectHandler) func(h *Header, buffer []byte) error {
+	return func(h *Header, buffer []byte) error {
+		packet := &Disconnect{Header: h}
 		_, err := decodeDisconnect(packet, buffer)
 		if err != nil {
 			return err
@@ -17,6 +17,6 @@ func DisconnectDecoder(fn disconnectHandler) func(h *MqttHeader, buffer []byte) 
 	}
 }
 
-func DisconnectLength(p *MqttDisconnect) int {
+func DisconnectLength(p *Disconnect) int {
 	return 0
 }
