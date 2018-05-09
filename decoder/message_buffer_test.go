@@ -5,14 +5,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vx-labs/mqtt-protocol/pb"
+	"github.com/vx-labs/mqtt-protocol/packet"
 )
 
 func TestDecoder_ReadMessageBuffer(t *testing.T) {
 	buff := []byte{0x32, 0x7, 0x0, 0x1, 'a', 0x0, 0x1, 'p', 'a'}
 	reader := bytes.NewReader(buff)
 	decoder := New()
-	p := &pb.MqttHeader{}
+	p := &packet.MqttHeader{}
 	pType, buff, err := decoder.readMessageBuffer(p, reader)
 	assert.Nil(t, err)
 	assert.Equal(t, byte(3), pType)
@@ -27,7 +27,7 @@ func TestDecoder_ReadMessageBuffer_Long(t *testing.T) {
 	}
 	reader := bytes.NewReader(buff)
 	decoder := New()
-	p := &pb.MqttHeader{}
+	p := &packet.MqttHeader{}
 	pType, buff, err := decoder.readMessageBuffer(p, reader)
 	assert.Nil(t, err)
 	assert.Equal(t, byte(3), pType)
@@ -43,7 +43,7 @@ func BenchmarkDecoder_ReadMessageBuffer(b *testing.B) {
 	}
 	reader := bytes.NewReader(buff)
 	d := New()
-	p := &pb.MqttHeader{}
+	p := &packet.MqttHeader{}
 	b.Run("short", func(b *testing.B) {
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {

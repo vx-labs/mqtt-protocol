@@ -5,18 +5,17 @@ import (
 	"io"
 
 	"github.com/vx-labs/mqtt-protocol/packet"
-	"github.com/vx-labs/mqtt-protocol/pb"
 )
 
 func packetDecoders(d *Decoder) map[byte]packetDecoder {
 	return map[byte]packetDecoder{
-		packet.PUBLISH:     pb.PublishDecoder(d.publishHandler),
-		packet.CONNECT:     pb.ConnectDecoder(d.connectHandler),
-		packet.SUBSCRIBE:   pb.SubscribeDecoder(d.subscribeHandler),
-		packet.UNSUBSCRIBE: pb.UnsubscribeDecoder(d.unsubscribeHandler),
-		packet.PINGREQ:     pb.PingReqDecoder(d.pingReqHandler),
-		packet.DISCONNECT:  pb.DisconnectDecoder(d.disconnectHandler),
-		packet.PUBACK:      pb.PubAckDecoder(d.pubAckHandler),
+		packet.PUBLISH:     packet.PublishDecoder(d.publishHandler),
+		packet.CONNECT:     packet.ConnectDecoder(d.connectHandler),
+		packet.SUBSCRIBE:   packet.SubscribeDecoder(d.subscribeHandler),
+		packet.UNSUBSCRIBE: packet.UnsubscribeDecoder(d.unsubscribeHandler),
+		packet.PINGREQ:     packet.PingReqDecoder(d.pingReqHandler),
+		packet.DISCONNECT:  packet.DisconnectDecoder(d.disconnectHandler),
+		packet.PUBACK:      packet.PubAckDecoder(d.pubAckHandler),
 	}
 }
 
@@ -26,25 +25,25 @@ func defaultPacketHandler(t string) error {
 
 func New(opts ...decoderCreateOp) *Decoder {
 	d := Decoder{
-		publishHandler: func(*pb.MqttPublish) error {
+		publishHandler: func(*packet.MqttPublish) error {
 			return defaultPacketHandler("publish")
 		},
-		connectHandler: func(*pb.MqttConnect) error {
+		connectHandler: func(*packet.MqttConnect) error {
 			return defaultPacketHandler("connect")
 		},
-		pubAckHandler: func(*pb.MqttPubAck) error {
+		pubAckHandler: func(*packet.MqttPubAck) error {
 			return defaultPacketHandler("puback")
 		},
-		pingReqHandler: func(*pb.MqttPingReq) error {
+		pingReqHandler: func(*packet.MqttPingReq) error {
 			return defaultPacketHandler("pingreq")
 		},
-		subscribeHandler: func(*pb.MqttSubscribe) error {
+		subscribeHandler: func(*packet.MqttSubscribe) error {
 			return defaultPacketHandler("subscribe")
 		},
-		unsubscribeHandler: func(*pb.MqttUnsubscribe) error {
+		unsubscribeHandler: func(*packet.MqttUnsubscribe) error {
 			return defaultPacketHandler("unsubcribe")
 		},
-		disconnectHandler: func(*pb.MqttDisconnect) error {
+		disconnectHandler: func(*packet.MqttDisconnect) error {
 			return defaultPacketHandler("disconnect")
 		},
 	}
@@ -55,21 +54,21 @@ func New(opts ...decoderCreateOp) *Decoder {
 	return &d
 }
 
-type packetDecoder func(header *pb.MqttHeader, buffer []byte) error
+type packetDecoder func(header *packet.MqttHeader, buffer []byte) error
 
 type Decoder struct {
 	packetDecoders     map[byte]packetDecoder
-	publishHandler     func(*pb.MqttPublish) error
-	connectHandler     func(*pb.MqttConnect) error
-	pingReqHandler     func(*pb.MqttPingReq) error
-	pubAckHandler      func(*pb.MqttPubAck) error
-	subscribeHandler   func(*pb.MqttSubscribe) error
-	unsubscribeHandler func(*pb.MqttUnsubscribe) error
-	disconnectHandler  func(*pb.MqttDisconnect) error
+	publishHandler     func(*packet.MqttPublish) error
+	connectHandler     func(*packet.MqttConnect) error
+	pingReqHandler     func(*packet.MqttPingReq) error
+	pubAckHandler      func(*packet.MqttPubAck) error
+	subscribeHandler   func(*packet.MqttSubscribe) error
+	unsubscribeHandler func(*packet.MqttUnsubscribe) error
+	disconnectHandler  func(*packet.MqttDisconnect) error
 }
 
 func (d *Decoder) Decode(r io.Reader) error {
-	h := &pb.MqttHeader{}
+	h := &packet.MqttHeader{}
 	packetType, buffer, err := d.readMessageBuffer(h, r)
 	if err != nil {
 		return err

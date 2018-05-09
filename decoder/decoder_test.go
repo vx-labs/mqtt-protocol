@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vx-labs/mqtt-protocol/pb"
+	"github.com/vx-labs/mqtt-protocol/packet"
 )
 
 func TestDecoder_Decode(t *testing.T) {
@@ -16,7 +16,7 @@ func TestDecoder_Decode(t *testing.T) {
 		buff = append(buff, 'a')
 	}
 	reader := bytes.NewReader(buff)
-	decoder := New(OnPublish(func(m *pb.MqttPublish) error { return nil }))
+	decoder := New(OnPublish(func(m *packet.MqttPublish) error { return nil }))
 	err := decoder.Decode(reader)
 	assert.Nil(t, err)
 }

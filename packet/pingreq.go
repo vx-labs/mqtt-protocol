@@ -1,4 +1,4 @@
-package pb
+package packet
 
 func decodePingReq(p *MqttPingReq, buff []byte) (int, error) {
 	return 0, nil

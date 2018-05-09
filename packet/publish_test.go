@@ -1,4 +1,4 @@
-package pb
+package packet
 
 import (
 	"testing"

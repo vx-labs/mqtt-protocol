@@ -1,4 +1,4 @@
-package pb
+package packet
 
 func decodeDisconnect(p *MqttDisconnect, buff []byte) (int, error) {
 	return 0, nil

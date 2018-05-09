@@ -1,4 +1,4 @@
-package pb
+package packet
 
 import (
 	"testing"
@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPingreq_Decode(t *testing.T) {
+func TestDisconnect_Decode(t *testing.T) {
 	var b []byte
-	n, err := decodePingReq(&MqttPingReq{}, b)
+	n, err := decodeDisconnect(&MqttDisconnect{}, b)
 	assert.Nil(t, err)
 	assert.Equal(t, 0, n)
 }

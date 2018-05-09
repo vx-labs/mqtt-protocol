@@ -13,7 +13,7 @@ import (
 
 	"github.com/vx-labs/mqtt-protocol/decoder"
 	"github.com/vx-labs/mqtt-protocol/encoder"
-	"github.com/vx-labs/mqtt-protocol/pb"
+	"github.com/vx-labs/mqtt-protocol/packet"
 )
 
 func main() {
@@ -65,50 +65,50 @@ func runSession(c net.Conn) {
 	enc := encoder.New(c)
 	keepAlive := int32(30)
 	dec := decoder.New(
-		decoder.OnConnect(func(p *pb.MqttConnect) error {
+		decoder.OnConnect(func(p *packet.MqttConnect) error {
 			log.Printf("received CONNECT from %s", p.ClientId)
 			keepAlive = p.KeepaliveTimer
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			enc.ConnAck(&pb.MqttConnAck{
+			enc.ConnAck(&packet.MqttConnAck{
 				Header:     p.Header,
-				ReturnCode: pb.CONNACK_CONNECTION_ACCEPTED,
+				ReturnCode: packet.CONNACK_CONNECTION_ACCEPTED,
 			})
 			return nil
 		}),
-		decoder.OnPublish(func(p *pb.MqttPublish) error {
+		decoder.OnPublish(func(p *packet.MqttPublish) error {
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
 			if p.Header.Qos == 1 {
-				return enc.PubAck(&pb.MqttPubAck{
+				return enc.PubAck(&packet.MqttPubAck{
 					Header:    p.Header,
 					MessageId: p.MessageId,
 				})
 			}
 			return nil
 		}),
-		decoder.OnSubscribe(func(p *pb.MqttSubscribe) error {
+		decoder.OnSubscribe(func(p *packet.MqttSubscribe) error {
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			return enc.SubAck(&pb.MqttSubAck{
+			return enc.SubAck(&packet.MqttSubAck{
 				Header:    p.Header,
 				MessageId: p.MessageId,
 			})
 		}),
-		decoder.OnUnsubscribe(func(p *pb.MqttUnsubscribe) error { return nil }),
-		decoder.OnPubAck(func(*pb.MqttPubAck) error { return nil }),
-		decoder.OnPingReq(func(p *pb.MqttPingReq) error {
+		decoder.OnUnsubscribe(func(p *packet.MqttUnsubscribe) error { return nil }),
+		decoder.OnPubAck(func(*packet.MqttPubAck) error { return nil }),
+		decoder.OnPingReq(func(p *packet.MqttPingReq) error {
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			return enc.PingResp(&pb.MqttPingResp{
+			return enc.PingResp(&packet.MqttPingResp{
 				Header: p.Header,
 			})
 		}),
-		decoder.OnDisconnect(func(p *pb.MqttDisconnect) error {
+		decoder.OnDisconnect(func(p *packet.MqttDisconnect) error {
 			return io.EOF
 		}),
 	)

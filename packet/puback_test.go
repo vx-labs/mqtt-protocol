@@ -1,4 +1,4 @@
-package pb
+package packet
 
 import (
 	"testing"
@@ -6,45 +6,45 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUnsubAck_Decode(t *testing.T) {
+func TestPubAck_Decode(t *testing.T) {
 	buff := []byte{
 		0x0, 0x1,
 	}
-	p := &MqttUnsubAck{}
-	n, err := decodeUnsubAck(p, buff)
+	p := &MqttPubAck{}
+	n, err := decodePubAck(p, buff)
 	assert.Equal(t, 2, n)
 	assert.Equal(t, int32(1), p.MessageId)
 	assert.Nil(t, err)
 }
-func BenchmarkUnsubAck_Decode(b *testing.B) {
+func BenchmarkPubAck_Decode(b *testing.B) {
 	buff := []byte{
 		0x0, 0x1,
 	}
-	p := &MqttUnsubAck{}
+	p := &MqttPubAck{}
 	for i := 0; i < b.N; i++ {
-		decodeUnsubAck(p, buff)
+		decodePubAck(p, buff)
 	}
 }
 
-func TestUnsubAck_Encode(t *testing.T) {
+func TestPubAck_Encode(t *testing.T) {
 	buff := make([]byte, 2)
-	p := &MqttUnsubAck{
+	p := &MqttPubAck{
 		Header:    &MqttHeader{Qos: 1},
 		MessageId: 9,
 	}
-	n, err := EncodeUnsubAck(p, buff)
+	n, err := EncodePubAck(p, buff)
 	assert.Nil(t, err)
 	assert.Equal(t, 2, n)
 	assert.Equal(t, []byte{0x0, 0x9}, buff)
 }
-func BenchmarkUnsubAck_Encode(b *testing.B) {
+func BenchmarkPubAck_Encode(b *testing.B) {
 	buff := make([]byte, 2)
-	p := &MqttUnsubAck{
+	p := &MqttPubAck{
 		Header:    &MqttHeader{Qos: 1},
 		MessageId: 9,
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		EncodeUnsubAck(p, buff)
+		EncodePubAck(p, buff)
 	}
 }

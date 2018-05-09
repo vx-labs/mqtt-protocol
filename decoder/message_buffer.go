@@ -5,7 +5,7 @@ import (
 	fmt "fmt"
 	"io"
 
-	"github.com/vx-labs/mqtt-protocol/pb"
+	"github.com/vx-labs/mqtt-protocol/packet"
 )
 
 func readBits(r io.Reader, buff []byte) (int, error) {
@@ -19,7 +19,7 @@ func readBits(r io.Reader, buff []byte) (int, error) {
 	}
 	return read, nil
 }
-func (d *Decoder) readMessageBuffer(p *pb.MqttHeader, r io.Reader) (byte, []byte, error) {
+func (d *Decoder) readMessageBuffer(p *packet.MqttHeader, r io.Reader) (byte, []byte, error) {
 	sizeBuff := make([]byte, 4)
 	read := 0
 	n, err := readBits(r, sizeBuff[0:1])

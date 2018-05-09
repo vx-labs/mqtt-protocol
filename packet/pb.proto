@@ -1,5 +1,5 @@
 syntax = "proto3";
-
+package packet;
 message MqttHeader {
 	bool dup = 1;
 	int32 qos = 2;
