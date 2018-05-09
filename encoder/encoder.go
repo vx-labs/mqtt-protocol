@@ -97,5 +97,5 @@ func (e *Encoder) ConnAck(p *pb.MqttConnAck, buff []byte) error {
 	if err != nil {
 		return err
 	}
-	return e.encode(packet.UNSUBACK, p.Header, 2, total, buff)
+	return e.encode(packet.CONNACK, p.Header, 2, total, buff)
 }

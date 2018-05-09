@@ -147,6 +147,6 @@ func TestEncoder_ConnAck(t *testing.T) {
 	}, buff)
 	assert.Nil(t, err)
 	assert.Equal(t,
-		[]byte{0xb0, 0x2, 0x0, 0x4},
+		[]byte{0x20, 0x2, 0x0, 0x4},
 		writer.Bytes())
 }
