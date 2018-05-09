@@ -18,6 +18,7 @@ const (
 
 var supportedProtocolVersions = map[int]string{
 	3: "MQIsdp",
+	4: "MQTT",
 }
 
 const DefaultKeepalive int32 = 30
