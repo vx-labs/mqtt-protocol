@@ -18,9 +18,9 @@ message MqttConnect {
     bool willRetain = 10;
     int32 keepaliveTimer = 11;
 };
-message MqttConnack {
+message MqttConnAck {
     MqttHeader header = 1;
-    bytes returnCode = 2;
+    int32 returnCode = 2;
 };
 
 message MqttDisconnect {
