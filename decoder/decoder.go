@@ -8,10 +8,6 @@ import (
 	"github.com/vx-labs/mqtt-protocol/pb"
 )
 
-const (
-	Default_Buffer_Size = 8192
-)
-
 func packetDecoders(d *Decoder) map[byte]packetDecoder {
 	return map[byte]packetDecoder{
 		packet.PUBLISH:     pb.PublishDecoder(d.publishHandler),
