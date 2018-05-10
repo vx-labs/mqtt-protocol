@@ -45,3 +45,17 @@ func BenchmarkDecoder_Decode(b *testing.B) {
 		}
 	})
 }
+
+func TestDecoder_DecodePubAck(t *testing.T) {
+	buff := []byte{0x40, 0x2, 0x0,
+		0x1}
+	for i := 0; i < 0x83; i++ {
+		buff = append(buff, 'a')
+	}
+	reader := bytes.NewReader(buff)
+	ok := false
+	decoder := New(OnPubAck(func(m *packet.PubAck) error { ok = true; return nil }))
+	err := decoder.Decode(reader)
+	assert.Nil(t, err)
+	assert.True(t, ok)
+}
