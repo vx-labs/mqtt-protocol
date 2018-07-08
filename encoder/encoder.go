@@ -2,6 +2,7 @@ package encoder
 
 import (
 	"encoding/binary"
+	"errors"
 	"io"
 
 	"github.com/vx-labs/mqtt-protocol/packet"
@@ -117,6 +118,18 @@ func MarshalPublish(p *packet.Publish) ([]byte, error) {
 		return nil, err
 	}
 	return buffer[:total+headerLength], encode(packet.PUBLISH, p.Header, headerLength, total, buffer)
+}
+func EncodePublish(p *packet.Publish, buffer []byte) (int, error) {
+	length := packet.PublishLength(p)
+	headerLength := 1 + remLengthBits(length)
+	if len(buffer) < headerLength+length {
+		return 0, errors.New("buffer too short")
+	}
+	total, err := packet.EncodePublish(p, buffer[headerLength:])
+	if err != nil {
+		return 0, err
+	}
+	return total + headerLength, encode(packet.PUBLISH, p.Header, headerLength, total, buffer)
 }
 func MarshalPubAck(p *packet.PubAck) ([]byte, error) {
 	length := packet.PubAckLength(p)
