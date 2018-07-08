@@ -26,7 +26,7 @@ func (e *Encoder) flush(buff []byte) error {
 	}
 	return nil
 }
-func (e *Encoder) encode(packetType byte, header *packet.Header, boundary, total int, buff []byte) error {
+func encode(packetType byte, header *packet.Header, boundary, total int, buff []byte) error {
 	n, err := encodeHeader(packetType, header, total, buff[:boundary])
 	total += n
 	if err != nil {
@@ -36,7 +36,7 @@ func (e *Encoder) encode(packetType byte, header *packet.Header, boundary, total
 	if n < boundary {
 		copy(buff[boundary-n:total], buff[boundary:])
 	}
-	return e.flush(buff[:total])
+	return nil
 }
 
 func encodeHeader(packetType byte, header *packet.Header, remLength int, buff []byte) (int, error) {
@@ -66,67 +66,110 @@ func remLengthBits(size int) int {
 }
 
 func (e *Encoder) Publish(p *packet.Publish) error {
+	buffer, err := MarshalPublish(p)
+	if err != nil {
+		return err
+	}
+	return e.flush(buffer)
+}
+func (e *Encoder) PubAck(p *packet.PubAck) error {
+	buffer, err := MarshalPubAck(p)
+	if err != nil {
+		return err
+	}
+	return e.flush(buffer)
+}
+func (e *Encoder) PingResp(p *packet.PingResp) error {
+	buffer, err := MarshalPingResp(p)
+	if err != nil {
+		return err
+	}
+	return e.flush(buffer)
+}
+func (e *Encoder) SubAck(p *packet.SubAck) error {
+	buffer, err := MarshalSubAck(p)
+	if err != nil {
+		return err
+	}
+	return e.flush(buffer)
+}
+func (e *Encoder) UnsubAck(p *packet.UnsubAck) error {
+	buffer, err := MarshalUnsubAck(p)
+	if err != nil {
+		return err
+	}
+	return e.flush(buffer)
+}
+func (e *Encoder) ConnAck(p *packet.ConnAck) error {
+	buffer, err := MarshalConnAck(p)
+	if err != nil {
+		return err
+	}
+	return e.flush(buffer)
+}
+
+func MarshalPublish(p *packet.Publish) ([]byte, error) {
 	length := packet.PublishLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
 	total, err := packet.EncodePublish(p, buffer[headerLength:])
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return e.encode(packet.PUBLISH, p.Header, headerLength, total, buffer)
+	return buffer[:total+headerLength], encode(packet.PUBLISH, p.Header, headerLength, total, buffer)
 }
-func (e *Encoder) PubAck(p *packet.PubAck) error {
+func MarshalPubAck(p *packet.PubAck) ([]byte, error) {
 	length := packet.PubAckLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
 
 	total, err := packet.EncodePubAck(p, buffer[headerLength:])
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return e.encode(packet.PUBACK, p.Header, headerLength, total, buffer)
+	return buffer[:total+headerLength], encode(packet.PUBACK, p.Header, headerLength, total, buffer)
 }
-func (e *Encoder) PingResp(p *packet.PingResp) error {
+func MarshalPingResp(p *packet.PingResp) ([]byte, error) {
 	length := packet.PingRespLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
 
 	total, err := packet.EncodePingResp(p, buffer[headerLength:])
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return e.encode(packet.PINGRESP, p.Header, headerLength, total, buffer)
+	return buffer[:total+headerLength], encode(packet.PINGRESP, p.Header, headerLength, total, buffer)
 }
-func (e *Encoder) SubAck(p *packet.SubAck) error {
+func MarshalSubAck(p *packet.SubAck) ([]byte, error) {
 	length := packet.SubAckLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
 
 	total, err := packet.EncodeSubAck(p, buffer[headerLength:])
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return e.encode(packet.SUBACK, p.Header, headerLength, total, buffer)
+	return buffer[:total+headerLength], encode(packet.SUBACK, p.Header, headerLength, total, buffer)
 }
-func (e *Encoder) UnsubAck(p *packet.UnsubAck) error {
+func MarshalUnsubAck(p *packet.UnsubAck) ([]byte, error) {
 	length := packet.UnsubAckLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
 
 	total, err := packet.EncodeUnsubAck(p, buffer[headerLength:])
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return e.encode(packet.UNSUBACK, p.Header, headerLength, total, buffer)
+	return buffer[:total+headerLength], encode(packet.UNSUBACK, p.Header, headerLength, total, buffer)
 }
-func (e *Encoder) ConnAck(p *packet.ConnAck) error {
+func MarshalConnAck(p *packet.ConnAck) ([]byte, error) {
 	length := packet.ConnAckLength(p)
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
 
 	total, err := packet.EncodeConnAck(p, buffer[headerLength:])
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return e.encode(packet.CONNACK, p.Header, headerLength, total, buffer)
+	return buffer[:total+headerLength], encode(packet.CONNACK, p.Header, headerLength, total, buffer)
 }
