@@ -2,7 +2,6 @@ package encoder
 
 import (
 	"encoding/binary"
-	"errors"
 	"io"
 
 	"github.com/vx-labs/mqtt-protocol/packet"
@@ -58,12 +57,15 @@ func encodeHeader(packetType byte, header *packet.Header, remLength int, buff []
 }
 
 func remLengthBits(size int) int {
-	value := 1
-	for size > 0x80 {
-		size = size >> 8
-		value++
+	if size <= 127 {
+		return 1
+	} else if size <= 16383 {
+		return 2
+	} else if size <= 2097151 {
+		return 3
+	} else {
+		return 4
 	}
-	return value
 }
 
 func (e *Encoder) Publish(p *packet.Publish) error {
@@ -117,20 +119,10 @@ func MarshalPublish(p *packet.Publish) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return buffer[:total+headerLength], encode(packet.PUBLISH, p.Header, headerLength, total, buffer)
+	_, err = encodeHeader(packet.PUBLISH, p.Header, total, buffer)
+	return buffer, err
 }
-func EncodePublish(p *packet.Publish, buffer []byte) (int, error) {
-	length := packet.PublishLength(p)
-	headerLength := 1 + remLengthBits(length)
-	if len(buffer) < headerLength+length {
-		return 0, errors.New("buffer too short")
-	}
-	total, err := packet.EncodePublish(p, buffer[headerLength:])
-	if err != nil {
-		return 0, err
-	}
-	return total + headerLength, encode(packet.PUBLISH, p.Header, headerLength, total, buffer)
-}
+
 func MarshalPubAck(p *packet.PubAck) ([]byte, error) {
 	length := packet.PubAckLength(p)
 	headerLength := 1 + remLengthBits(length)

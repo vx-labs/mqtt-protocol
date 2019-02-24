@@ -151,15 +151,3 @@ func BenchmarkEncoder_RemLength(b *testing.B) {
 		remLengthBits(129)
 	}
 }
-
-func TestEncoder_EncodePublish(t *testing.T) {
-	buff := make([]byte, 17)
-	n, err := EncodePublish(&packet.Publish{
-		MessageId: 1,
-		Header:    &packet.Header{},
-		Topic:     []byte("foo"),
-	}, buff)
-	assert.Nil(t, err)
-	assert.Equal(t, 7, n)
-	assert.Equal(t, byte(0x5), buff[1])
-}
