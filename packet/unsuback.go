@@ -34,3 +34,10 @@ func EncodeUnsubAck(p *UnsubAck, buff []byte) (int, error) {
 func UnsubAckLength(p *UnsubAck) int {
 	return 2
 }
+
+func (p *UnsubAck) Encode(buff []byte) (int, error) {
+	return EncodeUnsubAck(p, buff)
+}
+func (p *UnsubAck) Length() int {
+	return UnsubAckLength(p)
+}
