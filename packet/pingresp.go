@@ -29,3 +29,7 @@ func (p *PingResp) Encode(buff []byte) (int, error) {
 func (p *PingResp) Length() int {
 	return PingRespLength(p)
 }
+
+func (p *PingResp) GetType() byte {
+	return PINGRESP
+}

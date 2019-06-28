@@ -69,42 +69,25 @@ func remLengthBits(size int) int {
 }
 
 func (e *Encoder) Publish(p *packet.Publish) error {
-	buffer, err := MarshalPublish(p)
-	if err != nil {
-		return err
-	}
-	return e.flush(buffer)
+	return e.Encode(p)
 }
 func (e *Encoder) PubAck(p *packet.PubAck) error {
-	buffer, err := MarshalPubAck(p)
-	if err != nil {
-		return err
-	}
-	return e.flush(buffer)
+	return e.Encode(p)
 }
 func (e *Encoder) PingResp(p *packet.PingResp) error {
-	buffer, err := MarshalPingResp(p)
-	if err != nil {
-		return err
-	}
-	return e.flush(buffer)
+	return e.Encode(p)
 }
 func (e *Encoder) SubAck(p *packet.SubAck) error {
-	buffer, err := MarshalSubAck(p)
-	if err != nil {
-		return err
-	}
-	return e.flush(buffer)
+	return e.Encode(p)
 }
 func (e *Encoder) UnsubAck(p *packet.UnsubAck) error {
-	buffer, err := MarshalUnsubAck(p)
-	if err != nil {
-		return err
-	}
-	return e.flush(buffer)
+	return e.Encode(p)
 }
 func (e *Encoder) ConnAck(p *packet.ConnAck) error {
-	buffer, err := MarshalConnAck(p)
+	return e.Encode(p)
+}
+func (e *Encoder) Encode(p packet.Encoder) error {
+	buffer, err := Marshal(p)
 	if err != nil {
 		return err
 	}
@@ -112,69 +95,33 @@ func (e *Encoder) ConnAck(p *packet.ConnAck) error {
 }
 
 func MarshalPublish(p *packet.Publish) ([]byte, error) {
-	length := packet.PublishLength(p)
-	headerLength := 1 + remLengthBits(length)
-	buffer := make([]byte, headerLength+length)
-	total, err := packet.EncodePublish(p, buffer[headerLength:])
-	if err != nil {
-		return nil, err
-	}
-	_, err = encodeHeader(packet.PUBLISH, p.Header, total, buffer)
-	return buffer, err
+	return Marshal(p)
 }
 
 func MarshalPubAck(p *packet.PubAck) ([]byte, error) {
-	length := packet.PubAckLength(p)
-	headerLength := 1 + remLengthBits(length)
-	buffer := make([]byte, headerLength+length)
-
-	total, err := packet.EncodePubAck(p, buffer[headerLength:])
-	if err != nil {
-		return nil, err
-	}
-	return buffer[:total+headerLength], encode(packet.PUBACK, p.Header, headerLength, total, buffer)
+	return Marshal(p)
 }
 func MarshalPingResp(p *packet.PingResp) ([]byte, error) {
-	length := packet.PingRespLength(p)
-	headerLength := 1 + remLengthBits(length)
-	buffer := make([]byte, headerLength+length)
-
-	total, err := packet.EncodePingResp(p, buffer[headerLength:])
-	if err != nil {
-		return nil, err
-	}
-	return buffer[:total+headerLength], encode(packet.PINGRESP, p.Header, headerLength, total, buffer)
+	return Marshal(p)
 }
 func MarshalSubAck(p *packet.SubAck) ([]byte, error) {
-	length := packet.SubAckLength(p)
-	headerLength := 1 + remLengthBits(length)
-	buffer := make([]byte, headerLength+length)
-
-	total, err := packet.EncodeSubAck(p, buffer[headerLength:])
-	if err != nil {
-		return nil, err
-	}
-	return buffer[:total+headerLength], encode(packet.SUBACK, p.Header, headerLength, total, buffer)
+	return Marshal(p)
 }
 func MarshalUnsubAck(p *packet.UnsubAck) ([]byte, error) {
-	length := packet.UnsubAckLength(p)
-	headerLength := 1 + remLengthBits(length)
-	buffer := make([]byte, headerLength+length)
-
-	total, err := packet.EncodeUnsubAck(p, buffer[headerLength:])
-	if err != nil {
-		return nil, err
-	}
-	return buffer[:total+headerLength], encode(packet.UNSUBACK, p.Header, headerLength, total, buffer)
+	return Marshal(p)
 }
 func MarshalConnAck(p *packet.ConnAck) ([]byte, error) {
-	length := packet.ConnAckLength(p)
+	return Marshal(p)
+}
+
+func Marshal(p packet.Encoder) ([]byte, error) {
+	length := p.Length()
 	headerLength := 1 + remLengthBits(length)
 	buffer := make([]byte, headerLength+length)
 
-	total, err := packet.EncodeConnAck(p, buffer[headerLength:])
+	total, err := p.Encode(buffer[headerLength:])
 	if err != nil {
 		return nil, err
 	}
-	return buffer[:total+headerLength], encode(packet.CONNACK, p.Header, headerLength, total, buffer)
+	return buffer[:total+headerLength], encode(p.GetType(), p.GetHeader(), headerLength, total, buffer)
 }

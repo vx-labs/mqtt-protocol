@@ -40,3 +40,6 @@ func (p *PubAck) Encode(buff []byte) (int, error) {
 func (p *PubAck) Length() int {
 	return PubAckLength(p)
 }
+func (p *PubAck) GetType() byte {
+	return PUBACK
+}

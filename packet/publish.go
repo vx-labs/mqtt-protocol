@@ -55,6 +55,9 @@ func (p *Publish) Encode(buff []byte) (int, error) {
 func (p *Publish) Length() int {
 	return PublishLength(p)
 }
+func (p *Publish) GetType() byte {
+	return PUBLISH
+}
 
 type publishHandler func(*Publish) error
 

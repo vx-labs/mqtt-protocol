@@ -22,3 +22,6 @@ func (p *SubAck) Encode(buff []byte) (int, error) {
 func (p *SubAck) Length() int {
 	return SubAckLength(p)
 }
+func (p *SubAck) GetType() byte {
+	return SUBACK
+}

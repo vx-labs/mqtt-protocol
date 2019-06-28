@@ -22,4 +22,6 @@ const (
 type Encoder interface {
 	Encode(buff []byte) (int, error)
 	Length() int
+	GetHeader() *Header
+	GetType() byte
 }

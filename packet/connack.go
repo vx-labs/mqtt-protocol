@@ -31,3 +31,6 @@ func (p *ConnAck) Encode(buff []byte) (int, error) {
 func (p *ConnAck) Length() int {
 	return ConnAckLength(p)
 }
+func (p *ConnAck) GetType() byte {
+	return CONNACK
+}

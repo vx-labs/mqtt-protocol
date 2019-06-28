@@ -41,3 +41,6 @@ func (p *UnsubAck) Encode(buff []byte) (int, error) {
 func (p *UnsubAck) Length() int {
 	return UnsubAckLength(p)
 }
+func (p *UnsubAck) GetType() byte {
+	return UNSUBACK
+}
