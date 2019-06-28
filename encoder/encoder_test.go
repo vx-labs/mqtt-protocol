@@ -2,6 +2,7 @@ package encoder
 
 import (
 	"bytes"
+	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -50,7 +51,7 @@ func TestEncoder_Publish(t *testing.T) {
 }
 
 func BenchmarkEncoder_Publish(b *testing.B) {
-	writer := bytes.NewBuffer([]byte{})
+	writer := ioutil.Discard
 	e := New(writer)
 	p := &packet.Publish{
 		Header: &packet.Header{
@@ -60,7 +61,6 @@ func BenchmarkEncoder_Publish(b *testing.B) {
 		Topic:     []byte("a"),
 		Payload:   []byte("pa"),
 	}
-	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		e.Publish(p)
 	}

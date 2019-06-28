@@ -7,12 +7,35 @@ import (
 	"github.com/vx-labs/mqtt-protocol/packet"
 )
 
+type defaultBufferProvider struct{}
+
+func (d *defaultBufferProvider) New(size int) ([]byte, error) {
+	return make([]byte, size), nil
+}
+
+type staticBufferProvider struct {
+	b []byte
+}
+
+func (d *staticBufferProvider) New(size int) ([]byte, error) {
+	if len(d.b) >= size {
+		return d.b[:size], nil
+	}
+	d.b = make([]byte, size)
+	return d.b, nil
+}
+
+type BufferProvider interface {
+	New(size int) ([]byte, error)
+}
+
 type Encoder struct {
-	w io.Writer
+	w      io.Writer
+	buffer BufferProvider
 }
 
 func New(w io.Writer) *Encoder {
-	e := &Encoder{w: w}
+	e := &Encoder{w: w, buffer: &defaultBufferProvider{}}
 	return e
 }
 func (e *Encoder) flush(buff []byte) error {
@@ -87,38 +110,20 @@ func (e *Encoder) ConnAck(p *packet.ConnAck) error {
 	return e.Encode(p)
 }
 func (e *Encoder) Encode(p packet.Encoder) error {
-	buffer, err := Marshal(p)
+	buffer, err := e.Marshal(p)
 	if err != nil {
 		return err
 	}
 	return e.flush(buffer)
 }
 
-func MarshalPublish(p *packet.Publish) ([]byte, error) {
-	return Marshal(p)
-}
-
-func MarshalPubAck(p *packet.PubAck) ([]byte, error) {
-	return Marshal(p)
-}
-func MarshalPingResp(p *packet.PingResp) ([]byte, error) {
-	return Marshal(p)
-}
-func MarshalSubAck(p *packet.SubAck) ([]byte, error) {
-	return Marshal(p)
-}
-func MarshalUnsubAck(p *packet.UnsubAck) ([]byte, error) {
-	return Marshal(p)
-}
-func MarshalConnAck(p *packet.ConnAck) ([]byte, error) {
-	return Marshal(p)
-}
-
-func Marshal(p packet.Encoder) ([]byte, error) {
+func (e *Encoder) Marshal(p packet.Encoder) ([]byte, error) {
 	length := p.Length()
 	headerLength := 1 + remLengthBits(length)
-	buffer := make([]byte, headerLength+length)
-
+	buffer, err := e.buffer.New(headerLength + length)
+	if err != nil {
+		return nil, err
+	}
 	total, err := p.Encode(buffer[headerLength:])
 	if err != nil {
 		return nil, err
