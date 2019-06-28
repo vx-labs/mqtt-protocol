@@ -49,6 +49,13 @@ func EncodePublish(p *Publish, buff []byte) (int, error) {
 	return total, nil
 }
 
+func (p *Publish) Encode(buff []byte) (int, error) {
+	return EncodePublish(p, buff)
+}
+func (p *Publish) Length() int {
+	return PublishLength(p)
+}
+
 type publishHandler func(*Publish) error
 
 func PublishDecoder(fn publishHandler) func(h *Header, buffer []byte) error {

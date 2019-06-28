@@ -15,3 +15,10 @@ func EncodeSubAck(p *SubAck, buff []byte) (int, error) {
 func SubAckLength(p *SubAck) int {
 	return 2 + len(p.Qos)
 }
+
+func (p *SubAck) Encode(buff []byte) (int, error) {
+	return EncodeSubAck(p, buff)
+}
+func (p *SubAck) Length() int {
+	return SubAckLength(p)
+}

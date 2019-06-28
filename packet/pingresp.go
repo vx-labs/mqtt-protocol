@@ -22,3 +22,10 @@ func EncodePingResp(p *PingResp, buff []byte) (int, error) {
 func PingRespLength(p *PingResp) int {
 	return 0
 }
+
+func (p *PingResp) Encode(buff []byte) (int, error) {
+	return EncodePingResp(p, buff)
+}
+func (p *PingResp) Length() int {
+	return PingRespLength(p)
+}

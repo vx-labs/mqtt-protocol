@@ -18,3 +18,8 @@ const (
 	PINGRESP
 	DISCONNECT
 )
+
+type Encoder interface {
+	Encode(buff []byte) (int, error)
+	Length() int
+}

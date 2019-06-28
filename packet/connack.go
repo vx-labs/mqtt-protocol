@@ -24,3 +24,10 @@ func EncodeConnAck(p *ConnAck, buff []byte) (int, error) {
 func ConnAckLength(p *ConnAck) int {
 	return 2
 }
+
+func (p *ConnAck) Encode(buff []byte) (int, error) {
+	return EncodeConnAck(p, buff)
+}
+func (p *ConnAck) Length() int {
+	return ConnAckLength(p)
+}

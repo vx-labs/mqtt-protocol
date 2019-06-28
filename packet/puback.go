@@ -33,3 +33,10 @@ func EncodePubAck(p *PubAck, buff []byte) (int, error) {
 func PubAckLength(p *PubAck) int {
 	return 2
 }
+
+func (p *PubAck) Encode(buff []byte) (int, error) {
+	return EncodePubAck(p, buff)
+}
+func (p *PubAck) Length() int {
+	return PubAckLength(p)
+}
