@@ -41,6 +41,12 @@ func OnPingReq(fn func(*packet.PingReq) error) decoderCreateOp {
 		return d
 	}
 }
+func OnPingResp(fn func(*packet.PingResp) error) decoderCreateOp {
+	return func(d Decoder) Decoder {
+		d.pingRespHandler = fn
+		return d
+	}
+}
 func OnPubAck(fn func(*packet.PubAck) error) decoderCreateOp {
 	return func(d Decoder) Decoder {
 		d.pubAckHandler = fn

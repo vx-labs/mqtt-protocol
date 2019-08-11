@@ -65,6 +65,7 @@ func main() {
 				decoder.OnPubAck(logPuback),
 				decoder.OnDisconnect(logDisconnect),
 				decoder.OnPingReq(logPingReq),
+				decoder.OnPingResp(logPingResp),
 				decoder.OnUnsubscribe(logUnsubscribe),
 			)
 			err := dec.Decode(buf)
