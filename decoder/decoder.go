@@ -17,6 +17,7 @@ func packetDecoders(d *Decoder) map[byte]packetDecoder {
 		packet.PINGRESP:    packet.PingRespDecoder(d.pingRespHandler),
 		packet.DISCONNECT:  packet.DisconnectDecoder(d.disconnectHandler),
 		packet.PUBACK:      packet.PubAckDecoder(d.pubAckHandler),
+		packet.SUBACK:      packet.SubAckDecoder(d.subAckHandler),
 	}
 }
 
@@ -34,6 +35,9 @@ func New(opts ...decoderCreateOp) *Decoder {
 		},
 		pubAckHandler: func(*packet.PubAck) error {
 			return defaultPacketHandler("puback")
+		},
+		subAckHandler: func(*packet.SubAck) error {
+			return defaultPacketHandler("suback")
 		},
 		pingReqHandler: func(*packet.PingReq) error {
 			return defaultPacketHandler("pingreq")
@@ -67,6 +71,7 @@ type Decoder struct {
 	pingReqHandler     func(*packet.PingReq) error
 	pingRespHandler    func(*packet.PingResp) error
 	pubAckHandler      func(*packet.PubAck) error
+	subAckHandler      func(*packet.SubAck) error
 	subscribeHandler   func(*packet.Subscribe) error
 	unsubscribeHandler func(*packet.Unsubscribe) error
 	disconnectHandler  func(*packet.Disconnect) error

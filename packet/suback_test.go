@@ -6,6 +6,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSubAck_Decode(t *testing.T) {
+	buff := []byte{
+		0, 22, 2,
+	}
+	p := &SubAck{}
+	n, err := decodeSubAck(p, buff)
+	assert.Equal(t, 3, n)
+	assert.Equal(t, int32(22), p.MessageId)
+	assert.Equal(t, 1, len(p.Qos))
+	assert.Equal(t, int32(2), p.Qos[0])
+	assert.Nil(t, err)
+}
 func TestSuback_Encode(t *testing.T) {
 	buff := make([]byte, 10)
 	packet := &SubAck{

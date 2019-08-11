@@ -25,3 +25,28 @@ func (p *SubAck) Length() int {
 func (p *SubAck) GetType() byte {
 	return SUBACK
 }
+
+func decodeSubAck(p *SubAck, buff []byte) (int, error) {
+	p.MessageId = int32(binary.BigEndian.Uint16(buff))
+	total := 2
+	qosSlice := buff[total:]
+	p.Qos = make([]int32, len(qosSlice))
+	for idx := range qosSlice {
+		p.Qos[idx] = int32(qosSlice[idx])
+		total++
+	}
+	return total, nil
+}
+
+type subAckHandler func(*SubAck) error
+
+func SubAckDecoder(fn subAckHandler) func(h *Header, buffer []byte) error {
+	return func(h *Header, buffer []byte) error {
+		packet := &SubAck{Header: h}
+		_, err := decodeSubAck(packet, buffer)
+		if err != nil {
+			return err
+		}
+		return fn(packet)
+	}
+}

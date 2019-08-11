@@ -53,3 +53,9 @@ func OnPubAck(fn func(*packet.PubAck) error) decoderCreateOp {
 		return d
 	}
 }
+func OnSubAck(fn func(*packet.SubAck) error) decoderCreateOp {
+	return func(d Decoder) Decoder {
+		d.subAckHandler = fn
+		return d
+	}
+}

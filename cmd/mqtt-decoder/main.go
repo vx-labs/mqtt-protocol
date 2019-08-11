@@ -27,6 +27,10 @@ func logPuback(p *packet.PubAck) error {
 	fmt.Printf("puback: %v\n", p)
 	return nil
 }
+func logSuback(p *packet.SubAck) error {
+	fmt.Printf("suback: %v\n", p)
+	return nil
+}
 func logDisconnect(p *packet.Disconnect) error {
 	fmt.Printf("disconnect: %v\n", p)
 	return nil
@@ -63,6 +67,7 @@ func main() {
 				decoder.OnPublish(logPublish),
 				decoder.OnSubscribe(logSubscribe),
 				decoder.OnPubAck(logPuback),
+				decoder.OnSubAck(logSuback),
 				decoder.OnDisconnect(logDisconnect),
 				decoder.OnPingReq(logPingReq),
 				decoder.OnPingResp(logPingResp),
