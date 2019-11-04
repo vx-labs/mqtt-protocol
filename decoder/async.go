@@ -108,11 +108,13 @@ func unmarshalPacket(packetType byte, header *packet.Header, buffer []byte) (int
 		p = &packet.SubAck{Header: header}
 	case packet.UNSUBSCRIBE:
 		p = &packet.Unsubscribe{Header: header}
+	case packet.DISCONNECT:
+		p = &packet.Disconnect{Header: header}
 	default:
 		err := fmt.Errorf("received unsuported packet type %v", packetType)
 		return nil, err
 	}
-	err := p.Unmarshal(buffer)
+	err := p.UnmarshalMQTT(buffer)
 	return p, err
 }
 

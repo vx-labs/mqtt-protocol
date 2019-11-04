@@ -8,7 +8,7 @@ import (
 
 func TestDisconnect_Decode(t *testing.T) {
 	var b []byte
-	n, err := decodeDisconnect(&Disconnect{}, b)
+	n, err := UnmarshalDisconnect(&Disconnect{}, b)
 	assert.Nil(t, err)
 	assert.Equal(t, 0, n)
 }

@@ -28,50 +28,54 @@ type Encoder interface {
 
 type Decoder interface {
 	Type() byte
-	Unmarshal(buf []byte) error
+	UnmarshalMQTT(buf []byte) error
 }
 
 func (*Connect) Type() byte { return CONNECT }
-func (c *Connect) Unmarshal(buf []byte) error {
+func (c *Connect) UnmarshalMQTT(buf []byte) error {
 	_, err := unmarshalConnect(c, buf)
 	return err
 }
 func (*ConnAck) Type() byte { return CONNACK }
 
 func (*Publish) Type() byte { return PUBLISH }
-func (c *Publish) Unmarshal(buf []byte) error {
+func (c *Publish) UnmarshalMQTT(buf []byte) error {
 	_, err := UnmarshalPublish(c, buf)
 	return err
 }
 func (*PubAck) Type() byte { return PUBACK }
-func (c *PubAck) Unmarshal(buf []byte) error {
+func (c *PubAck) UnmarshalMQTT(buf []byte) error {
 	_, err := UnmarshalPubAck(c, buf)
 	return err
 }
 func (*Subscribe) Type() byte { return SUBSCRIBE }
-func (c *Subscribe) Unmarshal(buf []byte) error {
+func (c *Subscribe) UnmarshalMQTT(buf []byte) error {
 	_, err := UnmarshalSubscribe(c, buf)
 	return err
 }
 func (*SubAck) Type() byte { return SUBACK }
-func (c *SubAck) Unmarshal(buf []byte) error {
+func (c *SubAck) UnmarshalMQTT(buf []byte) error {
 	_, err := UnmarshalSubAck(c, buf)
 	return err
 }
 func (*UnsubAck) Type() byte { return UNSUBACK }
-func (c *UnsubAck) Unmarshal(buf []byte) error {
+func (c *UnsubAck) UnmarshalMQTT(buf []byte) error {
 	_, err := UnmarshalUnsubAck(c, buf)
 	return err
 }
 func (*Unsubscribe) Type() byte { return UNSUBSCRIBE }
-func (c *Unsubscribe) Unmarshal(buf []byte) error {
+func (c *Unsubscribe) UnmarshalMQTT(buf []byte) error {
 	_, err := UnmarshalUnsubscribe(c, buf)
 	return err
 }
 func (*PingReq) Type() byte { return PINGREQ }
-func (c *PingReq) Unmarshal(buf []byte) error {
+func (c *PingReq) UnmarshalMQTT(buf []byte) error {
 	_, err := UnmarshalPingReq(c, buf)
 	return err
 }
 func (*PingResp) Type() byte   { return PINGRESP }
 func (*Disconnect) Type() byte { return DISCONNECT }
+func (c *Disconnect) UnmarshalMQTT(buf []byte) error {
+	_, err := UnmarshalDisconnect(c, buf)
+	return err
+}
