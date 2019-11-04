@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func decodeUnsubAck(p *UnsubAck, buff []byte) (int, error) {
+func UnmarshalUnsubAck(p *UnsubAck, buff []byte) (int, error) {
 	p.MessageId = int32(binary.BigEndian.Uint16(buff))
 	return 2, nil
 }
@@ -15,7 +15,7 @@ type unsubAckHandler func(*UnsubAck) error
 func UnsubAckDecoder(fn unsubAckHandler) func(h *Header, buffer []byte) error {
 	return func(h *Header, buffer []byte) error {
 		packet := &UnsubAck{Header: h}
-		_, err := decodeUnsubAck(packet, buffer)
+		_, err := UnmarshalUnsubAck(packet, buffer)
 		if err != nil {
 			return err
 		}

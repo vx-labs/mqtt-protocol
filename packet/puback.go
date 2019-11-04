@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func decodePubAck(p *PubAck, buff []byte) (int, error) {
+func UnmarshalPubAck(p *PubAck, buff []byte) (int, error) {
 	p.MessageId = int32(binary.BigEndian.Uint16(buff))
 	return 2, nil
 }
@@ -15,7 +15,7 @@ type pubAckHandler func(*PubAck) error
 func PubAckDecoder(fn pubAckHandler) func(h *Header, buffer []byte) error {
 	return func(h *Header, buffer []byte) error {
 		packet := &PubAck{Header: h}
-		_, err := decodePubAck(packet, buffer)
+		_, err := UnmarshalPubAck(packet, buffer)
 		if err != nil {
 			return err
 		}

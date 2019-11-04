@@ -11,7 +11,7 @@ func TestPubAck_Decode(t *testing.T) {
 		0x0, 0x1,
 	}
 	p := &PubAck{}
-	n, err := decodePubAck(p, buff)
+	n, err := UnmarshalPubAck(p, buff)
 	assert.Equal(t, 2, n)
 	assert.Equal(t, int32(1), p.MessageId)
 	assert.Nil(t, err)
@@ -22,7 +22,7 @@ func BenchmarkPubAck_Decode(b *testing.B) {
 	}
 	p := &PubAck{}
 	for i := 0; i < b.N; i++ {
-		decodePubAck(p, buff)
+		UnmarshalPubAck(p, buff)
 	}
 }
 

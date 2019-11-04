@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func decodePublish(p *Publish, buff []byte) (int, error) {
+func UnmarshalPublish(p *Publish, buff []byte) (int, error) {
 	topic, n, err := decodeLP(buff)
 	total := n
 	if err != nil {
@@ -64,7 +64,7 @@ type publishHandler func(*Publish) error
 func PublishDecoder(fn publishHandler) func(h *Header, buffer []byte) error {
 	return func(h *Header, buffer []byte) error {
 		packet := &Publish{Header: h}
-		_, err := decodePublish(packet, buffer)
+		_, err := UnmarshalPublish(packet, buffer)
 		if err != nil {
 			return err
 		}

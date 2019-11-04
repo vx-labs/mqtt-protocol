@@ -16,7 +16,7 @@ func countSubscribeTopics(buff []byte) (count int, err error) {
 	}
 }
 
-func decodeSubscribe(p *Subscribe, buff []byte) (int, error) {
+func UnmarshalSubscribe(p *Subscribe, buff []byte) (int, error) {
 	p.MessageId = int32(binary.BigEndian.Uint16(buff))
 	total := 2
 	length, err := countSubscribeTopics(buff[total:])
@@ -46,7 +46,7 @@ type subscribeHandler func(*Subscribe) error
 func SubscribeDecoder(fn subscribeHandler) func(h *Header, buffer []byte) error {
 	return func(h *Header, buffer []byte) error {
 		packet := &Subscribe{Header: h}
-		_, err := decodeSubscribe(packet, buffer)
+		_, err := UnmarshalSubscribe(packet, buffer)
 		if err != nil {
 			return err
 		}

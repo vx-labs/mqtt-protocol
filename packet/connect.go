@@ -45,7 +45,7 @@ func willQoS(b byte) byte {
 	return (b & CONNECT_FLAG_WILL_QOS) >> 3
 }
 
-func decodeConnect(p *Connect, buff []byte) (int, error) {
+func unmarshalConnect(p *Connect, buff []byte) (int, error) {
 	total := 0
 	protocolName, n, err := decodeLP(buff)
 	if err != nil {
@@ -121,7 +121,7 @@ type connectHandler func(*Connect) error
 func ConnectDecoder(fn connectHandler) func(h *Header, buffer []byte) error {
 	return func(h *Header, buffer []byte) error {
 		packet := &Connect{Header: h}
-		_, err := decodeConnect(packet, buffer)
+		_, err := unmarshalConnect(packet, buffer)
 		if err != nil {
 			return err
 		}

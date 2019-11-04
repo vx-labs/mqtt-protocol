@@ -11,7 +11,7 @@ func TestSubAck_Decode(t *testing.T) {
 		0, 22, 2,
 	}
 	p := &SubAck{}
-	n, err := decodeSubAck(p, buff)
+	n, err := UnmarshalSubAck(p, buff)
 	assert.Equal(t, 3, n)
 	assert.Equal(t, int32(22), p.MessageId)
 	assert.Equal(t, 1, len(p.Qos))

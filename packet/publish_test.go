@@ -11,7 +11,7 @@ func TestPublish_Decode_QoS0(t *testing.T) {
 	p := &Publish{
 		Header: &Header{Qos: 0},
 	}
-	n, err := decodePublish(p, b)
+	n, err := UnmarshalPublish(p, b)
 	assert.Nil(t, err)
 	assert.Equal(t, 6, n)
 	assert.Equal(t, "a", string(p.Topic))
@@ -22,7 +22,7 @@ func TestPublish_Decode_QoS1(t *testing.T) {
 	p := &Publish{
 		Header: &Header{Qos: 1},
 	}
-	n, err := decodePublish(p, b)
+	n, err := UnmarshalPublish(p, b)
 	assert.Nil(t, err)
 	assert.Equal(t, 8, n)
 	assert.Equal(t, int32(1), p.MessageId)
@@ -37,7 +37,7 @@ func BenchmarkPublish_Decode_QoS0(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		decodePublish(p, buff)
+		UnmarshalPublish(p, buff)
 	}
 }
 func BenchmarkPublish_Decode_QoS1(b *testing.B) {
@@ -48,7 +48,7 @@ func BenchmarkPublish_Decode_QoS1(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		decodePublish(p, buff)
+		UnmarshalPublish(p, buff)
 	}
 }
 func TestPublish_Encode_QoS0(t *testing.T) {

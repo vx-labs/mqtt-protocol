@@ -26,7 +26,7 @@ func (p *SubAck) GetType() byte {
 	return SUBACK
 }
 
-func decodeSubAck(p *SubAck, buff []byte) (int, error) {
+func UnmarshalSubAck(p *SubAck, buff []byte) (int, error) {
 	p.MessageId = int32(binary.BigEndian.Uint16(buff))
 	total := 2
 	qosSlice := buff[total:]
@@ -43,7 +43,7 @@ type subAckHandler func(*SubAck) error
 func SubAckDecoder(fn subAckHandler) func(h *Header, buffer []byte) error {
 	return func(h *Header, buffer []byte) error {
 		packet := &SubAck{Header: h}
-		_, err := decodeSubAck(packet, buffer)
+		_, err := UnmarshalSubAck(packet, buffer)
 		if err != nil {
 			return err
 		}
