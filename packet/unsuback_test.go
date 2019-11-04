@@ -11,7 +11,7 @@ func TestUnsubAck_Decode(t *testing.T) {
 		0x0, 0x1,
 	}
 	p := &UnsubAck{}
-	n, err := decodeUnsubAck(p, buff)
+	n, err := UnmarshalUnsubAck(p, buff)
 	assert.Equal(t, 2, n)
 	assert.Equal(t, int32(1), p.MessageId)
 	assert.Nil(t, err)
@@ -22,7 +22,7 @@ func BenchmarkUnsubAck_Decode(b *testing.B) {
 	}
 	p := &UnsubAck{}
 	for i := 0; i < b.N; i++ {
-		decodeUnsubAck(p, buff)
+		UnmarshalUnsubAck(p, buff)
 	}
 }
 

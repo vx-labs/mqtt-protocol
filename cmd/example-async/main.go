@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"net/http"
@@ -62,11 +61,19 @@ func acceptLoop(l net.Listener) {
 }
 
 func runSession(c net.Conn) {
+	defer c.Close()
 	enc := encoder.New(c)
 	keepAlive := int32(30)
-	dec := decoder.New(
-		decoder.OnConnect(func(p *packet.Connect) error {
-			log.Printf("received CONNECT from %s", p.ClientId)
+	dec := decoder.Async(c)
+	defer dec.Cancel()
+	c.SetDeadline(
+		time.Now().Add(10 * time.Second),
+	)
+	published := 0
+	for pkt := range dec.Packet() {
+		switch p := pkt.(type) {
+		case *packet.Connect:
+			log.Printf("%s connected", p.ClientId)
 			keepAlive = p.KeepaliveTimer
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
@@ -75,66 +82,39 @@ func runSession(c net.Conn) {
 				Header:     p.Header,
 				ReturnCode: packet.CONNACK_CONNECTION_ACCEPTED,
 			})
-			return nil
-		}),
-		decoder.OnPublish(func(p *packet.Publish) error {
+		case *packet.Publish:
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
+			published++
 			if p.Header.Qos == 1 {
-				return enc.PubAck(&packet.PubAck{
+				enc.PubAck(&packet.PubAck{
 					Header:    p.Header,
 					MessageId: p.MessageId,
 				})
 			}
-			return nil
-		}),
-		decoder.OnSubscribe(func(p *packet.Subscribe) error {
+		case *packet.Subscribe:
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			return enc.SubAck(&packet.SubAck{
+			enc.SubAck(&packet.SubAck{
 				Header:    p.Header,
 				MessageId: p.MessageId,
 			})
-		}),
-		decoder.OnUnsubscribe(func(p *packet.Unsubscribe) error { return nil }),
-		decoder.OnPubAck(func(*packet.PubAck) error { return nil }),
-		decoder.OnPingReq(func(p *packet.PingReq) error {
+		case *packet.Unsubscribe:
+		case *packet.Disconnect:
+			log.Printf("session closed, %d message published", published)
+			return
+		case *packet.PingReq:
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			return enc.PingResp(&packet.PingResp{
+			enc.PingResp(&packet.PingResp{
 				Header: p.Header,
 			})
-		}),
-		decoder.OnDisconnect(func(p *packet.Disconnect) error {
-			log.Printf("session disconnected")
-			return io.EOF
-		}),
-	)
-	c.SetDeadline(
-		time.Now().Add(10 * time.Second),
-	)
-	decoderCh := make(chan struct{})
-	go func() {
-		defer close(decoderCh)
-		var err error
-		for {
-			err = dec.Decode(c)
-			if err == io.EOF {
-				return
-			}
-			if err != nil {
-				log.Printf("decoding failed: %v", err)
-				return
-			}
+		default:
+			log.Printf("received unknown packet")
 		}
-	}()
-
-	select {
-	case <-decoderCh:
 	}
-	c.Close()
-	log.Printf("session closed")
+	log.Printf("session lost: %v, %d message published", dec.Err(), published)
 }

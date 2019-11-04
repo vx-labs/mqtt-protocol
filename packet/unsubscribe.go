@@ -16,7 +16,7 @@ func countUnsubscribeTopics(buff []byte) (count int, err error) {
 	}
 }
 
-func decodeUnsubscribe(p *Unsubscribe, buff []byte) (int, error) {
+func UnmarshalUnsubscribe(p *Unsubscribe, buff []byte) (int, error) {
 	p.MessageId = int32(binary.BigEndian.Uint16(buff))
 	total := 2
 	length, err := countUnsubscribeTopics(buff[total:])
@@ -42,7 +42,7 @@ type unsubscribeHandler func(*Unsubscribe) error
 func UnsubscribeDecoder(fn unsubscribeHandler) func(h *Header, buffer []byte) error {
 	return func(h *Header, buffer []byte) error {
 		packet := &Unsubscribe{Header: h}
-		_, err := decodeUnsubscribe(packet, buffer)
+		_, err := UnmarshalUnsubscribe(packet, buffer)
 		if err != nil {
 			return err
 		}

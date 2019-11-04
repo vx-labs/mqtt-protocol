@@ -13,7 +13,7 @@ func TestSubscribe_Decode(t *testing.T) {
 		0x1,
 	}
 	p := &Subscribe{}
-	n, err := decodeSubscribe(p, buff)
+	n, err := UnmarshalSubscribe(p, buff)
 	assert.Equal(t, 7, n)
 	assert.Nil(t, err)
 }
@@ -49,6 +49,6 @@ func BenchmarkSubscribe_Decode(b *testing.B) {
 	p := &Subscribe{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		decodeSubscribe(p, buff)
+		UnmarshalSubscribe(p, buff)
 	}
 }
