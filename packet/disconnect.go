@@ -17,6 +17,9 @@ func DisconnectDecoder(fn disconnectHandler) func(h *Header, buffer []byte) erro
 	}
 }
 
-func DisconnectLength(p *Disconnect) int {
-	return 0
+func EncodeDisconnect(p *Disconnect, buff []byte) (int, error) {
+	return 0, nil
+}
+func (p *Disconnect) Encode(buff []byte) (int, error) {
+	return EncodeDisconnect(p, buff)
 }
