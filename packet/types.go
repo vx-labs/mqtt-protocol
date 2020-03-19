@@ -19,15 +19,18 @@ const (
 	DISCONNECT
 )
 
+type Packet interface {
+	Type() byte
+}
 type Encoder interface {
+	Packet
 	Encode(buff []byte) (int, error)
 	Length() int
 	GetHeader() *Header
-	GetType() byte
 }
 
 type Decoder interface {
-	Type() byte
+	Packet
 	UnmarshalMQTT(buf []byte) error
 }
 

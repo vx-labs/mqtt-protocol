@@ -128,5 +128,5 @@ func (e *Encoder) Marshal(p packet.Encoder) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return buffer[:total+headerLength], encode(p.GetType(), p.GetHeader(), headerLength, total, buffer)
+	return buffer[:total+headerLength], encode(p.Type(), p.GetHeader(), headerLength, total, buffer)
 }
