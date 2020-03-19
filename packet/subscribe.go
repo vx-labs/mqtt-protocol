@@ -53,3 +53,29 @@ func SubscribeDecoder(fn subscribeHandler) func(h *Header, buffer []byte) error 
 		return fn(packet)
 	}
 }
+
+func SubscribeLength(p *Subscribe) int {
+	size := 2
+	for idx := range p.Topic {
+		size += 2 + len(p.Topic[idx]) + 1
+	}
+	return size
+}
+
+func EncodeSubscribe(p *Subscribe, buff []byte) (int, error) {
+	total := 2
+	binary.BigEndian.PutUint16(buff[0:], uint16(p.MessageId))
+	for idx := range p.Topic {
+		n, err := encodeLP(p.Topic[idx], buff[total:])
+		total += n
+		if err != nil {
+			return total, err
+		}
+		buff[idx] = byte(p.Qos[idx])
+		total++
+	}
+	return total, nil
+}
+func (p *Subscribe) Encode(buff []byte) (int, error) {
+	return EncodeSubscribe(p, buff)
+}

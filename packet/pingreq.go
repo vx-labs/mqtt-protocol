@@ -16,3 +16,16 @@ func PingReqDecoder(fn pingReqHandler) func(h *Header, buffer []byte) error {
 		return fn(packet)
 	}
 }
+func EncodePingReq(p *PingReq, buff []byte) (int, error) {
+	return 0, nil
+}
+func PingReqLength(p *PingReq) int {
+	return 0
+}
+
+func (p *PingReq) Encode(buff []byte) (int, error) {
+	return EncodePingReq(p, buff)
+}
+func (p *PingReq) Length() int {
+	return PingReqLength(p)
+}
