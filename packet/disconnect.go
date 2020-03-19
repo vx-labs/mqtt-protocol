@@ -23,3 +23,6 @@ func EncodeDisconnect(p *Disconnect, buff []byte) (int, error) {
 func (p *Disconnect) Encode(buff []byte) (int, error) {
 	return EncodeDisconnect(p, buff)
 }
+func (p *Disconnect) Length() int {
+	return 0
+}

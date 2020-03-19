@@ -207,3 +207,6 @@ func ConnectLength(p *Connect) int {
 func (p *Connect) Encode(buff []byte) (int, error) {
 	return EncodeConnect(p, buff)
 }
+func (p *Connect) Length() int {
+	return ConnectLength(p)
+}

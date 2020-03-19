@@ -79,3 +79,6 @@ func EncodeSubscribe(p *Subscribe, buff []byte) (int, error) {
 func (p *Subscribe) Encode(buff []byte) (int, error) {
 	return EncodeSubscribe(p, buff)
 }
+func (p *Subscribe) Length() int {
+	return SubscribeLength(p)
+}

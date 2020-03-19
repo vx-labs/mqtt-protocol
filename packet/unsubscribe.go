@@ -50,7 +50,7 @@ func UnsubscribeDecoder(fn unsubscribeHandler) func(h *Header, buffer []byte) er
 	}
 }
 
-func UnsubscribeLength(p *Subscribe) int {
+func UnsubscribeLength(p *Unsubscribe) int {
 	size := 2
 	for idx := range p.Topic {
 		size += 2 + len(p.Topic[idx])
@@ -72,4 +72,7 @@ func EncodeUnsubscribe(p *Unsubscribe, buff []byte) (int, error) {
 }
 func (p *Unsubscribe) Encode(buff []byte) (int, error) {
 	return EncodeUnsubscribe(p, buff)
+}
+func (p *Unsubscribe) Length() int {
+	return UnsubscribeLength(p)
 }
