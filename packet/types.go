@@ -21,6 +21,7 @@ const (
 
 type Packet interface {
 	Type() byte
+	Encode(buff []byte) (int, error)
 }
 type Encoder interface {
 	Packet

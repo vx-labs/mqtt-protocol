@@ -26,6 +26,9 @@ const DefaultKeepalive int32 = 30
 func isSet(b byte, mask byte) bool {
 	return b&mask == mask
 }
+func set(b byte, mask byte) byte {
+	return b & mask
+}
 func username(b byte) bool {
 	return isSet(b, CONNECT_FLAG_USERNAME)
 }
@@ -127,4 +130,80 @@ func ConnectDecoder(fn connectHandler) func(h *Header, buffer []byte) error {
 		}
 		return fn(packet)
 	}
+}
+
+func EncodeConnect(p *Connect, buff []byte) (int, error) {
+	total, err := encodeLP([]byte(supportedProtocolVersions[4]), buff[0:])
+	buff[total] = 4
+	total++
+	var flag byte = 0
+	if p.Clean {
+		flag = set(CONNECT_FLAG_CLEAN_SESSION, flag)
+	}
+	if len(p.WillTopic) > 0 {
+		flag = set(CONNECT_FLAG_WILL_FLAG, flag)
+	}
+	qosFlags := byte(p.WillQos) << 3
+	flag = set(CONNECT_FLAG_WILL_QOS, qosFlags)
+	if p.WillRetain {
+		flag = set(CONNECT_FLAG_WILL_RETAIN, flag)
+	}
+	if len(p.Username) > 0 {
+		flag = set(CONNECT_FLAG_USERNAME, flag)
+	}
+	if len(p.Password) > 0 {
+		flag = set(CONNECT_FLAG_PASSWORD, flag)
+	}
+	total++
+	binary.BigEndian.PutUint16(buff[total:], uint16(p.KeepaliveTimer))
+	total += 2
+	n, err := encodeLP(p.ClientId, buff[total:])
+	total += n
+	if err != nil {
+		return total, err
+	}
+	if len(p.WillTopic) > 0 {
+		n, err := encodeLP(p.WillTopic, buff[total:])
+		total += n
+		if err != nil {
+			return total, err
+		}
+		n, err = encodeLP(p.WillPayload, buff[total:])
+		total += n
+		if err != nil {
+			return total, err
+		}
+	}
+	if len(p.Username) > 0 {
+		n, err = encodeLP(p.Username, buff[total:])
+		total += n
+		if err != nil {
+			return total, err
+		}
+	}
+	if len(p.Password) > 0 {
+		n, err = encodeLP(p.Password, buff[total:])
+		total += n
+		if err != nil {
+			return total, err
+		}
+	}
+	return total, err
+}
+func ConnectLength(p *Connect) int {
+	size := 6 + len(supportedProtocolVersions[4]) + 2 + len(p.ClientId)
+	if len(p.WillTopic) > 0 {
+		size += 2 + len(p.WillTopic) + 2 + len(p.WillPayload)
+	}
+	if len(p.Username) > 0 {
+		size += 2 + len(p.Username)
+	}
+	if len(p.Password) > 0 {
+		size += 2 + len(p.Password)
+	}
+	return size
+}
+
+func (p *Connect) Encode(buff []byte) (int, error) {
+	return EncodeConnect(p, buff)
 }
