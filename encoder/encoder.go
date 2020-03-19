@@ -109,7 +109,7 @@ func (e *Encoder) UnsubAck(p *packet.UnsubAck) error {
 func (e *Encoder) ConnAck(p *packet.ConnAck) error {
 	return e.Encode(p)
 }
-func (e *Encoder) Encode(p packet.Encoder) error {
+func (e *Encoder) Encode(p packet.Packet) error {
 	buffer, err := e.Marshal(p)
 	if err != nil {
 		return err
@@ -117,7 +117,7 @@ func (e *Encoder) Encode(p packet.Encoder) error {
 	return e.flush(buffer)
 }
 
-func (e *Encoder) Marshal(p packet.Encoder) ([]byte, error) {
+func (e *Encoder) Marshal(p packet.Packet) ([]byte, error) {
 	length := p.Length()
 	headerLength := 1 + remLengthBits(length)
 	buffer, err := e.buffer.New(headerLength + length)

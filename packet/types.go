@@ -21,15 +21,10 @@ const (
 
 type Packet interface {
 	Type() byte
-	Encode(buff []byte) (int, error)
-}
-type Encoder interface {
-	Packet
-	Encode(buff []byte) (int, error)
 	Length() int
+	Encode(buff []byte) (int, error)
 	GetHeader() *Header
 }
-
 type Decoder interface {
 	Packet
 	UnmarshalMQTT(buf []byte) error
