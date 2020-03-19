@@ -49,3 +49,27 @@ func UnsubscribeDecoder(fn unsubscribeHandler) func(h *Header, buffer []byte) er
 		return fn(packet)
 	}
 }
+
+func UnsubscribeLength(p *Subscribe) int {
+	size := 2
+	for idx := range p.Topic {
+		size += 2 + len(p.Topic[idx])
+	}
+	return size
+}
+
+func EncodeUnsubscribe(p *Unsubscribe, buff []byte) (int, error) {
+	total := 2
+	binary.BigEndian.PutUint16(buff[0:], uint16(p.MessageId))
+	for idx := range p.Topic {
+		n, err := encodeLP(p.Topic[idx], buff[total:])
+		total += n
+		if err != nil {
+			return total, err
+		}
+	}
+	return total, nil
+}
+func (p *Unsubscribe) Encode(buff []byte) (int, error) {
+	return EncodeUnsubscribe(p, buff)
+}
