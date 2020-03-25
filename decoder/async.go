@@ -11,7 +11,7 @@ import (
 )
 
 type AsyncDecoder struct {
-	queue  chan interface{}
+	queue  chan packet.Packet
 	done   chan struct{}
 	cancel chan struct{}
 	err    error
@@ -36,7 +36,7 @@ func (local Packet) Less(remote btree.Item) bool {
 
 func Async(r io.Reader, opts ...decoderCreateOp) *AsyncDecoder {
 	a := &AsyncDecoder{
-		queue:  make(chan interface{}, 20),
+		queue:  make(chan packet.Packet, 20),
 		done:   make(chan struct{}),
 		cancel: make(chan struct{}),
 	}
@@ -78,11 +78,11 @@ func (a *AsyncDecoder) loop(r io.Reader) error {
 	}
 	return err
 }
-func (a *AsyncDecoder) Packet() <-chan interface{} {
+func (a *AsyncDecoder) Packet() <-chan packet.Packet {
 	return a.queue
 }
 
-func decodeEncodedPacket(r io.Reader) (interface{}, error) {
+func decodeEncodedPacket(r io.Reader) (packet.Packet, error) {
 	h := &packet.Header{}
 	packetType, buffer, err := readMessageBuffer(h, r)
 	if err != nil {
@@ -91,7 +91,7 @@ func decodeEncodedPacket(r io.Reader) (interface{}, error) {
 	return unmarshalPacket(packetType, h, buffer)
 }
 
-func unmarshalPacket(packetType byte, header *packet.Header, buffer []byte) (interface{}, error) {
+func unmarshalPacket(packetType byte, header *packet.Header, buffer []byte) (packet.Packet, error) {
 	var p packet.Decoder
 	switch packetType {
 	case packet.CONNECT:

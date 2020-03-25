@@ -19,6 +19,31 @@ const (
 	DISCONNECT
 )
 
+func TypeString(p Packet) string {
+	switch p.Type() {
+	case CONNECT:
+		return "CONNECT"
+	case SUBSCRIBE:
+		return "SUBSCRIBE"
+	case PUBLISH:
+		return "PUBLISH"
+	case PINGREQ:
+		return "PINGREQ"
+	case PUBACK:
+		return "PUBACK"
+	case SUBACK:
+		return "SUBACK"
+	case UNSUBSCRIBE:
+		return "UNSUBSCRIBE"
+	case UNSUBACK:
+		return "UNSUBACK"
+	case DISCONNECT:
+		return "DISCONNECT"
+	default:
+		return "Unsupported"
+	}
+}
+
 type Packet interface {
 	Type() byte
 	Length() int
