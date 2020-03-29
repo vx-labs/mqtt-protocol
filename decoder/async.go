@@ -4,7 +4,6 @@ import (
 	"errors"
 	fmt "fmt"
 	"io"
-	"log"
 
 	"github.com/google/btree"
 
