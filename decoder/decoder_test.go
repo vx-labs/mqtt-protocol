@@ -9,10 +9,10 @@ import (
 )
 
 func TestDecoder_Decode(t *testing.T) {
-	buff := []byte{0x32, 0x81, 0x1,
+	buff := []byte{0x32, 0x54,
 		0x0, 0x1, 'a',
-		0x0, 0x83}
-	for i := 0; i < 0x83; i++ {
+		0x0, 0x50}
+	for i := 0; i < 0x50; i++ {
 		buff = append(buff, 'a')
 	}
 	reader := bytes.NewReader(buff)

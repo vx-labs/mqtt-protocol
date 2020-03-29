@@ -2,6 +2,7 @@ package decoder
 
 import (
 	"bytes"
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -9,16 +10,16 @@ import (
 )
 
 func TestAsyncDecoder_Packets(t *testing.T) {
-	buff := []byte{0x32, 0x81, 0x1,
+	buff := []byte{0x32, 55,
 		0x0, 0x1, 'a',
-		0x0, 0x83}
-	for i := 0; i < 0x83; i++ {
+		0, 50}
+	for i := 0; i < 50; i++ {
 		buff = append(buff, 'a')
 	}
 	reader := bytes.NewReader(buff)
 	decoder := Async(reader)
 	<-decoder.Done()
-	require.NoError(t, decoder.Err())
+	require.Error(t, io.EOF, decoder.Err())
 	p := <-decoder.Packet()
 	require.IsType(t, &packet.Publish{}, p)
 }
