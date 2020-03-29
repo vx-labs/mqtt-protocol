@@ -60,14 +60,15 @@ func New(w io.Writer, opts ...option) *Encoder {
 }
 func (e *Encoder) flush(buff []byte) error {
 	total := 0
-	defer e.stats.Add(float64(total))
 	for total < len(buff) {
 		n, err := e.w.Write(buff[total:])
 		total += n
 		if err != nil {
+			e.stats.Add(float64(total))
 			return err
 		}
 	}
+	e.stats.Add(float64(total))
 	return nil
 }
 func encode(packetType byte, header *packet.Header, boundary, total int, buff []byte) error {
