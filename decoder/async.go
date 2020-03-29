@@ -88,7 +88,11 @@ func (a *AsyncDecoder) loop(r io.Reader) error {
 	pkt, n, err := decodeEncodedPacket(r)
 	a.stats.Add(float64(n))
 	if pkt != nil {
-		a.queue <- pkt
+		select {
+		case a.queue <- pkt:
+		case <-a.cancel:
+			return errors.New("context cancelled")
+		}
 	}
 	return err
 }
