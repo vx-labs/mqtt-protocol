@@ -52,54 +52,45 @@ type Packet interface {
 }
 type Decoder interface {
 	Packet
-	UnmarshalMQTT(buf []byte) error
+	UnmarshalMQTT(buf []byte) (int, error)
 }
 
 func (*Connect) Type() byte { return CONNECT }
-func (c *Connect) UnmarshalMQTT(buf []byte) error {
-	_, err := unmarshalConnect(c, buf)
-	return err
+func (c *Connect) UnmarshalMQTT(buf []byte) (int, error) {
+	return unmarshalConnect(c, buf)
 }
 func (*ConnAck) Type() byte { return CONNACK }
 
 func (*Publish) Type() byte { return PUBLISH }
-func (c *Publish) UnmarshalMQTT(buf []byte) error {
-	_, err := UnmarshalPublish(c, buf)
-	return err
+func (c *Publish) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalPublish(c, buf)
 }
 func (*PubAck) Type() byte { return PUBACK }
-func (c *PubAck) UnmarshalMQTT(buf []byte) error {
-	_, err := UnmarshalPubAck(c, buf)
-	return err
+func (c *PubAck) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalPubAck(c, buf)
 }
 func (*Subscribe) Type() byte { return SUBSCRIBE }
-func (c *Subscribe) UnmarshalMQTT(buf []byte) error {
-	_, err := UnmarshalSubscribe(c, buf)
-	return err
+func (c *Subscribe) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalSubscribe(c, buf)
 }
 func (*SubAck) Type() byte { return SUBACK }
-func (c *SubAck) UnmarshalMQTT(buf []byte) error {
-	_, err := UnmarshalSubAck(c, buf)
-	return err
+func (c *SubAck) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalSubAck(c, buf)
 }
 func (*UnsubAck) Type() byte { return UNSUBACK }
-func (c *UnsubAck) UnmarshalMQTT(buf []byte) error {
-	_, err := UnmarshalUnsubAck(c, buf)
-	return err
+func (c *UnsubAck) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalUnsubAck(c, buf)
 }
 func (*Unsubscribe) Type() byte { return UNSUBSCRIBE }
-func (c *Unsubscribe) UnmarshalMQTT(buf []byte) error {
-	_, err := UnmarshalUnsubscribe(c, buf)
-	return err
+func (c *Unsubscribe) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalUnsubscribe(c, buf)
 }
 func (*PingReq) Type() byte { return PINGREQ }
-func (c *PingReq) UnmarshalMQTT(buf []byte) error {
-	_, err := UnmarshalPingReq(c, buf)
-	return err
+func (c *PingReq) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalPingReq(c, buf)
 }
 func (*PingResp) Type() byte   { return PINGRESP }
 func (*Disconnect) Type() byte { return DISCONNECT }
-func (c *Disconnect) UnmarshalMQTT(buf []byte) error {
-	_, err := UnmarshalDisconnect(c, buf)
-	return err
+func (c *Disconnect) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalDisconnect(c, buf)
 }

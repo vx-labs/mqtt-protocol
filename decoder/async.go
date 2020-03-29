@@ -11,6 +11,7 @@ import (
 )
 
 type AsyncDecoder struct {
+	stats  StatRecorder
 	queue  chan packet.Packet
 	done   chan struct{}
 	cancel chan struct{}
@@ -34,11 +35,23 @@ func (local Packet) Less(remote btree.Item) bool {
 	return local.timestamp < remote.(Packet).timestamp
 }
 
-func Async(r io.Reader, opts ...decoderCreateOp) *AsyncDecoder {
+type asyncDecoderCreateOp func(*AsyncDecoder)
+
+func WithStatRecorder(recorder StatRecorder) asyncDecoderCreateOp {
+	return func(a *AsyncDecoder) {
+		a.stats = recorder
+	}
+}
+
+func Async(r io.Reader, opts ...asyncDecoderCreateOp) *AsyncDecoder {
 	a := &AsyncDecoder{
+		stats:  &noopStatRecorder{},
 		queue:  make(chan packet.Packet, 20),
 		done:   make(chan struct{}),
 		cancel: make(chan struct{}),
+	}
+	for _, opt := range opts {
+		opt(a)
 	}
 	go func() {
 		defer func() {
@@ -72,7 +85,8 @@ func (a *AsyncDecoder) Err() error {
 	return a.err
 }
 func (a *AsyncDecoder) loop(r io.Reader) error {
-	pkt, err := decodeEncodedPacket(r)
+	pkt, n, err := decodeEncodedPacket(r)
+	a.stats.Add(float64(n))
 	if pkt != nil {
 		a.queue <- pkt
 	}
@@ -82,16 +96,18 @@ func (a *AsyncDecoder) Packet() <-chan packet.Packet {
 	return a.queue
 }
 
-func decodeEncodedPacket(r io.Reader) (packet.Packet, error) {
+func decodeEncodedPacket(r io.Reader) (packet.Packet, int, error) {
 	h := &packet.Header{}
-	packetType, buffer, err := readMessageBuffer(h, r)
+	packetType, buffer, count, err := readMessageBuffer(h, r)
+
 	if err != nil {
-		return nil, err
+		return nil, count, err
 	}
-	return unmarshalPacket(packetType, h, buffer)
+	pkt, pktRead, err := unmarshalPacket(packetType, h, buffer)
+	return pkt, pktRead + count, err
 }
 
-func unmarshalPacket(packetType byte, header *packet.Header, buffer []byte) (packet.Packet, error) {
+func unmarshalPacket(packetType byte, header *packet.Header, buffer []byte) (packet.Packet, int, error) {
 	var p packet.Decoder
 	switch packetType {
 	case packet.CONNECT:
@@ -112,10 +128,10 @@ func unmarshalPacket(packetType byte, header *packet.Header, buffer []byte) (pac
 		p = &packet.Disconnect{Header: header}
 	default:
 		err := fmt.Errorf("received unsuported packet type %v", packetType)
-		return nil, err
+		return nil, 0, err
 	}
-	err := p.UnmarshalMQTT(buffer)
-	return p, err
+	n, err := p.UnmarshalMQTT(buffer)
+	return p, n, err
 }
 
 /*

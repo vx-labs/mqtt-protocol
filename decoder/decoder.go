@@ -79,7 +79,7 @@ type Decoder struct {
 
 func (d *Decoder) Decode(r io.Reader) error {
 	h := &packet.Header{}
-	packetType, buffer, err := readMessageBuffer(h, r)
+	packetType, buffer, _, err := readMessageBuffer(h, r)
 	if err != nil {
 		return err
 	}

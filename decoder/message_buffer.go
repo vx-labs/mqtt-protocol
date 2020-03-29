@@ -19,13 +19,13 @@ func readBits(r io.Reader, buff []byte) (int, error) {
 	}
 	return read, nil
 }
-func readMessageBuffer(p *packet.Header, r io.Reader) (byte, []byte, error) {
+func readMessageBuffer(p *packet.Header, r io.Reader) (byte, []byte, int, error) {
 	sizeBuff := make([]byte, 4)
 	read := 0
 	n, err := readBits(r, sizeBuff[0:1])
 	read += n
 	if err != nil {
-		return 0, nil, err
+		return 0, nil, read, err
 	}
 	fixedHeader := sizeBuff[0]
 	p.Retain = fixedHeader&0x1 == 0x1
@@ -36,16 +36,16 @@ func readMessageBuffer(p *packet.Header, r io.Reader) (byte, []byte, error) {
 	read = 0
 	for {
 		if read > 4 {
-			return 0, nil, fmt.Errorf("malformed remlength")
+			return 0, nil, read, fmt.Errorf("malformed remlength")
 		}
 		cur := read
 		n, err := readBits(r, sizeBuff[read:read+1])
 		if n == 0 {
-			return 0, nil, fmt.Errorf("null read")
+			return 0, nil, read, fmt.Errorf("null read")
 		}
 		read++
 		if err != nil {
-			return 0, nil, err
+			return 0, nil, read, err
 		}
 		if sizeBuff[cur] < 0x80 {
 			break
@@ -54,5 +54,5 @@ func readMessageBuffer(p *packet.Header, r io.Reader) (byte, []byte, error) {
 	remlen, _ := binary.Uvarint(sizeBuff)
 	buffer := make([]byte, remlen)
 	n, err = readBits(r, buffer)
-	return packetType, buffer, nil
+	return packetType, buffer, read, nil
 }

@@ -29,17 +29,38 @@ type BufferProvider interface {
 	New(size int) ([]byte, error)
 }
 
+type StatRecorder interface {
+	Add(float64)
+}
+
+type noopStatRecorder struct{}
+
+func (*noopStatRecorder) Add(float64) {}
+
 type Encoder struct {
 	w      io.Writer
+	stats  StatRecorder
 	buffer BufferProvider
 }
 
-func New(w io.Writer) *Encoder {
-	e := &Encoder{w: w, buffer: &defaultBufferProvider{}}
+type option func(*Encoder)
+
+func WithStatRecorder(recorder StatRecorder) option {
+	return func(e *Encoder) {
+		e.stats = recorder
+	}
+}
+
+func New(w io.Writer, opts ...option) *Encoder {
+	e := &Encoder{w: w, buffer: &defaultBufferProvider{}, stats: &noopStatRecorder{}}
+	for _, opt := range opts {
+		opt(e)
+	}
 	return e
 }
 func (e *Encoder) flush(buff []byte) error {
 	total := 0
+	defer e.stats.Add(float64(total))
 	for total < len(buff) {
 		n, err := e.w.Write(buff[total:])
 		total += n
