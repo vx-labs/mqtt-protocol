@@ -102,15 +102,12 @@ func (a *AsyncDecoder) Packet() <-chan packet.Packet {
 }
 
 func decodeEncodedPacket(r io.Reader) (packet.Packet, int, error) {
-	log.Print("a")
 	h := &packet.Header{}
 	packetType, buffer, count, err := readMessageBuffer(h, r)
-	log.Print(len(buffer))
 	if err != nil {
 		return nil, count, err
 	}
 	pkt, pktRead, err := unmarshalPacket(packetType, h, buffer)
-	log.Print(pktRead)
 	return pkt, pktRead + count, err
 }
 
