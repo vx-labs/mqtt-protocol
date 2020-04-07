@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"net"
@@ -64,7 +65,7 @@ func runSession(c net.Conn) {
 	defer c.Close()
 	enc := encoder.New(c)
 	keepAlive := int32(30)
-	dec := decoder.Async(c)
+	dec := decoder.Async(bufio.NewReader(c))
 	defer dec.Cancel()
 	c.SetDeadline(
 		time.Now().Add(10 * time.Second),
