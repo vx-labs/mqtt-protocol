@@ -12,7 +12,7 @@ func TestDecoder_ReadMessageBuffer(t *testing.T) {
 	buff := []byte{0x32, 0x7, 0x0, 0x1, 'a', 0x0, 0x1, 'p', 'a'}
 	reader := bytes.NewReader(buff)
 	p := &packet.Header{}
-	pType, buff, _, err := readMessageBuffer(p, reader)
+	pType, buff, _, err := readMessageBuffer(p, make([]byte, 4), reader)
 	assert.Nil(t, err)
 	assert.Equal(t, byte(3), pType)
 	assert.Equal(t, 7, len(buff))
@@ -26,7 +26,7 @@ func TestDecoder_ReadMessageBuffer_Long(t *testing.T) {
 	}
 	reader := bytes.NewReader(buff)
 	p := &packet.Header{}
-	pType, buff, _, err := readMessageBuffer(p, reader)
+	pType, buff, _, err := readMessageBuffer(p, make([]byte, 4), reader)
 	assert.Nil(t, err)
 	assert.Equal(t, byte(3), pType)
 	assert.Equal(t, 129, len(buff))
@@ -45,14 +45,14 @@ func BenchmarkDecoder_ReadMessageBuffer(b *testing.B) {
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
 			reader.Reset(buff)
-			readMessageBuffer(p, reader)
+			readMessageBuffer(p, make([]byte, 4), reader)
 		}
 	})
 	b.Run("long", func(b *testing.B) {
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
 			reader.Reset(longBuff)
-			readMessageBuffer(p, reader)
+			readMessageBuffer(p, make([]byte, 4), reader)
 		}
 	})
 }

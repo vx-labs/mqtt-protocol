@@ -10,7 +10,7 @@ import (
 )
 
 func TestEncoder_EncodeHeader(t *testing.T) {
-	buff := make([]byte, 5)
+	buff := make([]byte, 4)
 	n, err := encodeHeader(packet.PUBLISH, &packet.Header{}, 10, buff)
 	assert.Nil(t, err)
 	assert.Equal(t, 2, n)
@@ -18,7 +18,7 @@ func TestEncoder_EncodeHeader(t *testing.T) {
 	assert.Equal(t, byte(0xa), buff[1])
 }
 func TestEncoder_EncodeHeader_Long(t *testing.T) {
-	buff := make([]byte, 5)
+	buff := make([]byte, 4)
 	n, err := encodeHeader(packet.PUBLISH, &packet.Header{}, 129, buff)
 	assert.Nil(t, err)
 	assert.Equal(t, 3, n)
@@ -27,7 +27,7 @@ func TestEncoder_EncodeHeader_Long(t *testing.T) {
 	assert.Equal(t, byte(0x1), buff[2])
 }
 func BenchmarkEncoder_EncodeHeader_Long(b *testing.B) {
-	buff := make([]byte, 5)
+	buff := make([]byte, 4)
 	for i := 0; i < b.N; i++ {
 		encodeHeader(packet.PUBLISH, &packet.Header{}, 129, buff)
 	}

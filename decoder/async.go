@@ -11,11 +11,13 @@ import (
 )
 
 type AsyncDecoder struct {
-	stats  StatRecorder
-	queue  chan packet.Packet
-	done   chan struct{}
-	cancel chan struct{}
-	err    error
+	stats     StatRecorder
+	queue     chan packet.Packet
+	done      chan struct{}
+	cancel    chan struct{}
+	err       error
+	headerBuf []byte
+	msgBuf    []byte
 }
 
 type Packet struct {
@@ -45,10 +47,11 @@ func WithStatRecorder(recorder StatRecorder) asyncDecoderCreateOp {
 
 func Async(r io.Reader, opts ...asyncDecoderCreateOp) *AsyncDecoder {
 	a := &AsyncDecoder{
-		stats:  &noopStatRecorder{},
-		queue:  make(chan packet.Packet, 20),
-		done:   make(chan struct{}),
-		cancel: make(chan struct{}),
+		stats:     &noopStatRecorder{},
+		queue:     make(chan packet.Packet, 20),
+		done:      make(chan struct{}),
+		cancel:    make(chan struct{}),
+		headerBuf: make([]byte, 4),
 	}
 	for _, opt := range opts {
 		opt(a)
@@ -85,7 +88,7 @@ func (a *AsyncDecoder) Err() error {
 	return a.err
 }
 func (a *AsyncDecoder) loop(r io.Reader) error {
-	pkt, n, err := decodeEncodedPacket(r)
+	pkt, n, err := decodeEncodedPacket(a.headerBuf, r)
 	a.stats.Add(float64(n))
 	if pkt != nil {
 		select {
@@ -100,9 +103,12 @@ func (a *AsyncDecoder) Packet() <-chan packet.Packet {
 	return a.queue
 }
 
-func decodeEncodedPacket(r io.Reader) (packet.Packet, int, error) {
+func decodeEncodedPacket(headerBuf []byte, r io.Reader) (packet.Packet, int, error) {
+	if len(headerBuf) != 4 {
+		return nil, 0, errors.New("invalid header buffer size")
+	}
 	h := &packet.Header{}
-	packetType, buffer, count, err := readMessageBuffer(h, r)
+	packetType, buffer, count, err := readMessageBuffer(h, headerBuf, r)
 	if err != nil {
 		return nil, count, err
 	}

@@ -23,3 +23,17 @@ func TestAsyncDecoder_Packets(t *testing.T) {
 	p := <-decoder.Packet()
 	require.IsType(t, &packet.Publish{}, p)
 }
+func BenchmarkAsyncDecoder_decodeEncodedPacket(b *testing.B) {
+	buff := []byte{0x32, 55,
+		0x0, 0x1, 'a',
+		0, 50}
+	for i := 0; i < 50; i++ {
+		buff = append(buff, 'a')
+	}
+	h := make([]byte, 4)
+	reader := bytes.NewReader(buff)
+	for i := 0; i < b.N; i++ {
+		reader.Seek(0, io.SeekStart)
+		decodeEncodedPacket(h, reader)
+	}
+}

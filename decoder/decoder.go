@@ -27,6 +27,7 @@ func defaultPacketHandler(t string) error {
 
 func New(opts ...decoderCreateOp) *Decoder {
 	d := Decoder{
+		headerBuf: make([]byte, 4),
 		publishHandler: func(*packet.Publish) error {
 			return defaultPacketHandler("publish")
 		},
@@ -65,6 +66,7 @@ func New(opts ...decoderCreateOp) *Decoder {
 type packetDecoder func(header *packet.Header, buffer []byte) error
 
 type Decoder struct {
+	headerBuf          []byte
 	packetDecoders     map[byte]packetDecoder
 	publishHandler     func(*packet.Publish) error
 	connectHandler     func(*packet.Connect) error
@@ -79,7 +81,7 @@ type Decoder struct {
 
 func (d *Decoder) Decode(r io.Reader) error {
 	h := &packet.Header{}
-	packetType, buffer, _, err := readMessageBuffer(h, r)
+	packetType, buffer, _, err := readMessageBuffer(h, d.headerBuf, r)
 	if err != nil {
 		return err
 	}
