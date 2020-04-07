@@ -72,7 +72,7 @@ func (e *Encoder) flush(buff []byte) error {
 	return nil
 }
 func encode(packetType byte, header *packet.Header, boundary, total int, buff []byte) error {
-	n, err := encodeHeader(packetType, header, total, buff[:boundary])
+	n, err := EncodeHeader(packetType, header, total, buff[:boundary])
 	total += n
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func encode(packetType byte, header *packet.Header, boundary, total int, buff []
 	return nil
 }
 
-func encodeHeader(packetType byte, header *packet.Header, remLength int, buff []byte) (int, error) {
+func EncodeHeader(packetType byte, header *packet.Header, remLength int, buff []byte) (int, error) {
 	var dup, qos, retain byte
 	if header.Dup {
 		dup = 1
