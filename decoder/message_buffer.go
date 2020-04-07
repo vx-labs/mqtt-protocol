@@ -9,23 +9,12 @@ import (
 	"github.com/vx-labs/mqtt-protocol/packet"
 )
 
-func readBits(r io.Reader, buff []byte) (int, error) {
-	read := 0
-	for read < len(buff) {
-		n, err := r.Read(buff[read:])
-		read += n
-		if err != nil {
-			return read, err
-		}
-	}
-	return read, nil
-}
 func readMessageBuffer(p *packet.Header, sizeBuf []byte, r io.Reader) (byte, []byte, int, error) {
 	if len(sizeBuf) != 4 {
 		return 0, nil, 0, errors.New("invalid header buffer size")
 	}
 	read := 0
-	n, err := readBits(r, sizeBuf[0:1])
+	n, err := io.ReadFull(r, sizeBuf[0:1])
 	read += n
 	if err != nil {
 		return 0, nil, read, err
@@ -35,14 +24,13 @@ func readMessageBuffer(p *packet.Header, sizeBuf []byte, r io.Reader) (byte, []b
 	p.Qos = int32(fixedHeader & (0x3 << 1) >> 1)
 	p.Dup = fixedHeader&(0x1<<3)>>3 == 1
 	packetType := fixedHeader & (0xf << 4) >> 4
-
 	read = 0
 	for {
 		if read > 4 {
 			return 0, nil, read, fmt.Errorf("malformed remlength")
 		}
 		cur := read
-		n, err := readBits(r, sizeBuf[read:read+1])
+		n, err := io.ReadFull(r, sizeBuf[read:read+1])
 		if n == 0 {
 			return 0, nil, read, fmt.Errorf("null read")
 		}
