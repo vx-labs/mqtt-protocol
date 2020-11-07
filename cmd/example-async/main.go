@@ -63,7 +63,7 @@ func acceptLoop(l net.Listener) {
 
 func runSession(c net.Conn) {
 	defer c.Close()
-	enc := encoder.New(c)
+	enc := encoder.New()
 	keepAlive := int32(30)
 	dec := decoder.Async(bufio.NewReader(c))
 	defer dec.Cancel()
@@ -79,7 +79,7 @@ func runSession(c net.Conn) {
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			enc.ConnAck(&packet.ConnAck{
+			enc.ConnAck(c, &packet.ConnAck{
 				Header:     p.Header,
 				ReturnCode: packet.CONNACK_CONNECTION_ACCEPTED,
 			})
@@ -89,7 +89,7 @@ func runSession(c net.Conn) {
 			)
 			published++
 			if p.Header.Qos == 1 {
-				enc.PubAck(&packet.PubAck{
+				enc.PubAck(c, &packet.PubAck{
 					Header:    p.Header,
 					MessageId: p.MessageId,
 				})
@@ -98,7 +98,7 @@ func runSession(c net.Conn) {
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			enc.SubAck(&packet.SubAck{
+			enc.SubAck(c, &packet.SubAck{
 				Header:    p.Header,
 				MessageId: p.MessageId,
 			})
@@ -110,7 +110,7 @@ func runSession(c net.Conn) {
 			c.SetDeadline(
 				time.Now().Add(time.Duration(keepAlive) * time.Second),
 			)
-			enc.PingResp(&packet.PingResp{
+			enc.PingResp(c, &packet.PingResp{
 				Header: p.Header,
 			})
 		default:

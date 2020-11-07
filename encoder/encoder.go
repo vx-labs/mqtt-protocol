@@ -38,7 +38,6 @@ type noopStatRecorder struct{}
 func (*noopStatRecorder) Add(float64) {}
 
 type Encoder struct {
-	w      io.Writer
 	stats  StatRecorder
 	buffer BufferProvider
 }
@@ -51,17 +50,17 @@ func WithStatRecorder(recorder StatRecorder) option {
 	}
 }
 
-func New(w io.Writer, opts ...option) *Encoder {
-	e := &Encoder{w: w, buffer: &defaultBufferProvider{}, stats: &noopStatRecorder{}}
+func New(opts ...option) *Encoder {
+	e := &Encoder{buffer: &defaultBufferProvider{}, stats: &noopStatRecorder{}}
 	for _, opt := range opts {
 		opt(e)
 	}
 	return e
 }
-func (e *Encoder) flush(buff []byte) error {
+func (e *Encoder) flush(w io.Writer, buff []byte) error {
 	total := 0
 	for total < len(buff) {
-		n, err := e.w.Write(buff[total:])
+		n, err := w.Write(buff[total:])
 		total += n
 		if err != nil {
 			e.stats.Add(float64(total))
@@ -113,30 +112,30 @@ func remLengthBits(size int) int {
 	}
 }
 
-func (e *Encoder) Publish(p *packet.Publish) error {
-	return e.Encode(p)
+func (e *Encoder) Publish(w io.Writer, p *packet.Publish) error {
+	return e.Encode(w, p)
 }
-func (e *Encoder) PubAck(p *packet.PubAck) error {
-	return e.Encode(p)
+func (e *Encoder) PubAck(w io.Writer, p *packet.PubAck) error {
+	return e.Encode(w, p)
 }
-func (e *Encoder) PingResp(p *packet.PingResp) error {
-	return e.Encode(p)
+func (e *Encoder) PingResp(w io.Writer, p *packet.PingResp) error {
+	return e.Encode(w, p)
 }
-func (e *Encoder) SubAck(p *packet.SubAck) error {
-	return e.Encode(p)
+func (e *Encoder) SubAck(w io.Writer, p *packet.SubAck) error {
+	return e.Encode(w, p)
 }
-func (e *Encoder) UnsubAck(p *packet.UnsubAck) error {
-	return e.Encode(p)
+func (e *Encoder) UnsubAck(w io.Writer, p *packet.UnsubAck) error {
+	return e.Encode(w, p)
 }
-func (e *Encoder) ConnAck(p *packet.ConnAck) error {
-	return e.Encode(p)
+func (e *Encoder) ConnAck(w io.Writer, p *packet.ConnAck) error {
+	return e.Encode(w, p)
 }
-func (e *Encoder) Encode(p packet.Packet) error {
+func (e *Encoder) Encode(w io.Writer, p packet.Packet) error {
 	buffer, err := e.Marshal(p)
 	if err != nil {
 		return err
 	}
-	return e.flush(buffer)
+	return e.flush(w, buffer)
 }
 
 func (e *Encoder) Marshal(p packet.Packet) ([]byte, error) {

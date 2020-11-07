@@ -35,8 +35,8 @@ func BenchmarkEncoder_EncodeHeader_Long(b *testing.B) {
 
 func TestEncoder_Publish(t *testing.T) {
 	writer := bytes.NewBuffer([]byte{})
-	e := New(writer)
-	err := e.Publish(&packet.Publish{
+	e := New()
+	err := e.Publish(writer, &packet.Publish{
 		Header: &packet.Header{
 			Qos: 1,
 		},
@@ -52,7 +52,7 @@ func TestEncoder_Publish(t *testing.T) {
 
 func BenchmarkEncoder_Publish(b *testing.B) {
 	writer := ioutil.Discard
-	e := New(writer)
+	e := New()
 	p := &packet.Publish{
 		Header: &packet.Header{
 			Qos: 1,
@@ -62,13 +62,13 @@ func BenchmarkEncoder_Publish(b *testing.B) {
 		Payload:   []byte("pa"),
 	}
 	for i := 0; i < b.N; i++ {
-		e.Publish(p)
+		e.Publish(writer, p)
 	}
 }
 func TestEncoder_PubAck(t *testing.T) {
 	writer := bytes.NewBuffer([]byte{})
-	e := New(writer)
-	err := e.PubAck(&packet.PubAck{
+	e := New()
+	err := e.PubAck(writer, &packet.PubAck{
 		Header: &packet.Header{
 			Qos: 1,
 		},
@@ -81,7 +81,7 @@ func TestEncoder_PubAck(t *testing.T) {
 }
 func BenchmarkEncoder_PubAck(b *testing.B) {
 	writer := bytes.NewBuffer([]byte{})
-	e := New(writer)
+	e := New()
 	p := &packet.PubAck{
 		Header: &packet.Header{
 			Qos: 1,
@@ -90,13 +90,13 @@ func BenchmarkEncoder_PubAck(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		e.PubAck(p)
+		e.PubAck(writer, p)
 	}
 }
 func TestEncoder_PingResp(t *testing.T) {
 	writer := bytes.NewBuffer([]byte{})
-	e := New(writer)
-	err := e.PingResp(&packet.PingResp{
+	e := New()
+	err := e.PingResp(writer, &packet.PingResp{
 		Header: &packet.Header{},
 	})
 	assert.Nil(t, err)
@@ -106,8 +106,8 @@ func TestEncoder_PingResp(t *testing.T) {
 }
 func TestEncoder_SubAck(t *testing.T) {
 	writer := bytes.NewBuffer([]byte{})
-	e := New(writer)
-	err := e.SubAck(&packet.SubAck{
+	e := New()
+	err := e.SubAck(writer, &packet.SubAck{
 		Header:    &packet.Header{},
 		MessageId: 12,
 		Qos:       []int32{1, 2, 1},
@@ -119,8 +119,8 @@ func TestEncoder_SubAck(t *testing.T) {
 }
 func TestEncoder_UnsubAck(t *testing.T) {
 	writer := bytes.NewBuffer([]byte{})
-	e := New(writer)
-	err := e.UnsubAck(&packet.UnsubAck{
+	e := New()
+	err := e.UnsubAck(writer, &packet.UnsubAck{
 		Header:    &packet.Header{},
 		MessageId: 12,
 	})
@@ -131,8 +131,8 @@ func TestEncoder_UnsubAck(t *testing.T) {
 }
 func TestEncoder_ConnAck(t *testing.T) {
 	writer := bytes.NewBuffer([]byte{})
-	e := New(writer)
-	err := e.ConnAck(&packet.ConnAck{
+	e := New()
+	err := e.ConnAck(writer, &packet.ConnAck{
 		Header:     &packet.Header{},
 		ReturnCode: packet.CONNACK_REFUSED_BAD_USERNAME_OR_PASSWORD,
 	})
