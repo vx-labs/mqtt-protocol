@@ -88,7 +88,7 @@ func (a *AsyncDecoder) Err() error {
 	return a.err
 }
 func (a *AsyncDecoder) loop(r io.Reader) error {
-	pkt, n, err := decodeEncodedPacket(a.headerBuf, r)
+	pkt, n, err := decodeEncodedPacket(a.headerBuf, r, true)
 	a.stats.Add(float64(n))
 	if pkt != nil {
 		select {
@@ -103,12 +103,12 @@ func (a *AsyncDecoder) Packet() <-chan packet.Packet {
 	return a.queue
 }
 
-func decodeEncodedPacket(headerBuf []byte, r io.Reader) (packet.Packet, int, error) {
+func decodeEncodedPacket(headerBuf []byte, r io.Reader, block bool) (packet.Packet, int, error) {
 	if len(headerBuf) != 4 {
 		return nil, 0, errors.New("invalid header buffer size")
 	}
 	h := &packet.Header{}
-	packetType, buffer, count, err := readMessageBuffer(h, headerBuf, r)
+	packetType, buffer, count, err := readMessageBuffer(h, headerBuf, r, block)
 	if err != nil {
 		return nil, count, err
 	}

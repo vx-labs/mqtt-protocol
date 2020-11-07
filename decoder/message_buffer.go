@@ -9,15 +9,30 @@ import (
 	"github.com/vx-labs/mqtt-protocol/packet"
 )
 
-func readMessageBuffer(p *packet.Header, sizeBuf []byte, r io.Reader) (byte, []byte, int, error) {
+var (
+	ErrNoData = errors.New("no data available")
+)
+
+func readMessageBuffer(p *packet.Header, sizeBuf []byte, r io.Reader, block bool) (byte, []byte, int, error) {
 	if len(sizeBuf) != 4 {
 		return 0, nil, 0, errors.New("invalid header buffer size")
 	}
 	read := 0
-	n, err := io.ReadFull(r, sizeBuf[0:1])
-	read += n
-	if err != nil {
-		return 0, nil, read, err
+	if block {
+		n, err := io.ReadFull(r, sizeBuf[0:1])
+		read += n
+		if err != nil {
+			return 0, nil, read, err
+		}
+	} else {
+		n, err := r.Read(sizeBuf[0:1])
+		read += n
+		if err != nil {
+			return 0, nil, read, err
+		}
+		if n == 0 {
+			return 0, nil, read, ErrNoData
+		}
 	}
 	fixedHeader := sizeBuf[0]
 	p.Retain = fixedHeader&0x1 == 0x1
@@ -44,6 +59,7 @@ func readMessageBuffer(p *packet.Header, sizeBuf []byte, r io.Reader) (byte, []b
 	}
 	remlen, _ := binary.Uvarint(sizeBuf[:read])
 	buffer := make([]byte, remlen)
-	n, err = io.ReadFull(r, buffer)
-	return packetType, buffer, read, nil
+	n, err := io.ReadFull(r, buffer)
+	read += n
+	return packetType, buffer, read, err
 }

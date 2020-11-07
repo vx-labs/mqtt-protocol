@@ -38,7 +38,7 @@ func acceptLoop(l net.Listener) {
 	}
 	worker := &worker{
 		enc: encoder.New(),
-		dec: decoder.New(),
+		dec: decoder.New(true),
 		meta: &sessions{
 			data: make(map[string]*session),
 		},
@@ -85,7 +85,7 @@ type session struct {
 }
 
 func (w *worker) runSession(c net.Conn, epoller *epoll) {
-	pkt, err := decoder.Decode(c, make([]byte, 4))
+	pkt, err := decoder.Decode(c, make([]byte, 4), true)
 	if err != nil {
 		return
 	}

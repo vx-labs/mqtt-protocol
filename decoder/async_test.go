@@ -35,7 +35,7 @@ func BenchmarkAsyncDecoder_decodeEncodedPacket(b *testing.B) {
 	reader := bytes.NewReader(buf)
 	for i := 0; i < b.N; i++ {
 		reader.Seek(0, io.SeekStart)
-		decodeEncodedPacket(h, reader)
+		decodeEncodedPacket(h, reader, true)
 	}
 }
 func BenchmarkAsyncDecoder_unmarshalPacket(b *testing.B) {
