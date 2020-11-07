@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"sync"
 	"time"
 
 	_ "net/http/pprof"
@@ -30,7 +31,9 @@ func main() {
 }
 
 func acceptLoop(l net.Listener) {
-	meta := map[string]*session{}
+	meta := &sessions{
+		data: make(map[string]*session),
+	}
 	epoller, err := MkEpoll()
 	if err != nil {
 		panic(err)
@@ -64,6 +67,11 @@ func acceptLoop(l net.Listener) {
 	}
 }
 
+type sessions struct {
+	data map[string]*session
+	mtx  sync.RWMutex
+}
+
 type session struct {
 	keepalive int32
 	connect   *packet.Connect
@@ -71,7 +79,7 @@ type session struct {
 	published int
 }
 
-func runSession(c net.Conn, meta map[string]*session, epoller *epoll) {
+func runSession(c net.Conn, meta *sessions, epoller *epoll) {
 	pkt, err := decoder.Decode(c, make([]byte, 4))
 	if err != nil {
 		return
@@ -85,23 +93,28 @@ func runSession(c net.Conn, meta map[string]*session, epoller *epoll) {
 	)
 	log.Printf("%s connected", string(p.ClientId))
 
-	encoder.New(c).Encode(&packet.ConnAck{
+	encoder.New().Encode(c, &packet.ConnAck{
 		Header:     p.Header,
 		ReturnCode: packet.CONNACK_CONNECTION_ACCEPTED,
 	})
-	meta[c.RemoteAddr().String()] = &session{keepalive: p.KeepaliveTimer, c: c, published: 0, connect: p}
+	meta.mtx.Lock()
 	if err := epoller.Add(c); err != nil {
 		c.Close()
+		meta.mtx.Unlock()
 		log.Printf("Failed to add connection %v", err)
+		return
 	}
+	meta.data[c.RemoteAddr().String()] = &session{keepalive: p.KeepaliveTimer, c: c, published: 0, connect: p}
+	meta.mtx.Unlock()
 }
 
-func processSession(buf []byte, c net.Conn, meta map[string]*session) error {
-	session, ok := meta[c.RemoteAddr().String()]
+func processSession(enc *encoder.Encoder, buf []byte, c net.Conn, meta *sessions) error {
+	meta.mtx.Lock()
+	session, ok := meta.data[c.RemoteAddr().String()]
+	meta.mtx.Unlock()
 	if !ok {
 		return errors.New("session not found")
 	}
-	enc := encoder.New(c)
 
 	pkt, err := decoder.Decode(c, buf)
 
@@ -116,7 +129,7 @@ func processSession(buf []byte, c net.Conn, meta map[string]*session) error {
 		)
 		session.published++
 		if p.Header.Qos == 1 {
-			enc.PubAck(&packet.PubAck{
+			enc.PubAck(c, &packet.PubAck{
 				Header:    p.Header,
 				MessageId: p.MessageId,
 			})
@@ -125,7 +138,7 @@ func processSession(buf []byte, c net.Conn, meta map[string]*session) error {
 		c.SetDeadline(
 			time.Now().Add(time.Duration(session.keepalive) * time.Second),
 		)
-		enc.SubAck(&packet.SubAck{
+		enc.SubAck(c, &packet.SubAck{
 			Header:    p.Header,
 			MessageId: p.MessageId,
 		})
@@ -137,7 +150,7 @@ func processSession(buf []byte, c net.Conn, meta map[string]*session) error {
 		c.SetDeadline(
 			time.Now().Add(time.Duration(session.keepalive) * time.Second),
 		)
-		enc.PingResp(&packet.PingResp{
+		enc.PingResp(c, &packet.PingResp{
 			Header: p.Header,
 		})
 	default:
@@ -146,8 +159,9 @@ func processSession(buf []byte, c net.Conn, meta map[string]*session) error {
 	return nil
 }
 
-func start(meta map[string]*session, epoller *epoll) {
+func start(meta *sessions, epoller *epoll) {
 	buf := make([]byte, 4)
+	enc := encoder.New()
 	for {
 		connections, err := epoller.Wait()
 		if err != nil {
@@ -155,12 +169,14 @@ func start(meta map[string]*session, epoller *epoll) {
 			continue
 		}
 		for _, c := range connections {
-			err := processSession(buf, c, meta)
+			err := processSession(enc, buf, c, meta)
 			if err != nil {
 				if err := epoller.Remove(c); err != nil {
 					log.Printf("Failed to remove %v", err)
 				}
-				delete(meta, c.RemoteAddr().String())
+				meta.mtx.Lock()
+				delete(meta.data, c.RemoteAddr().String())
+				meta.mtx.Unlock()
 			}
 		}
 	}
