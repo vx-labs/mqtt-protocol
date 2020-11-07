@@ -108,7 +108,7 @@ func runSession(c net.Conn, meta *sessions, epoller *epoll) {
 	meta.mtx.Unlock()
 }
 
-func processSession(enc *encoder.Encoder, buf []byte, c net.Conn, meta *sessions) error {
+func processSession(enc *encoder.Encoder, dec *decoder.Sync, c net.Conn, meta *sessions) error {
 	meta.mtx.Lock()
 	session, ok := meta.data[c.RemoteAddr().String()]
 	meta.mtx.Unlock()
@@ -116,7 +116,7 @@ func processSession(enc *encoder.Encoder, buf []byte, c net.Conn, meta *sessions
 		return errors.New("session not found")
 	}
 
-	pkt, err := decoder.Decode(c, buf)
+	pkt, err := dec.Decode(c)
 
 	if err != nil {
 		log.Printf("session lost: %v, %d message published", err, session.published)
@@ -160,8 +160,8 @@ func processSession(enc *encoder.Encoder, buf []byte, c net.Conn, meta *sessions
 }
 
 func start(meta *sessions, epoller *epoll) {
-	buf := make([]byte, 4)
 	enc := encoder.New()
+	dec := decoder.New()
 	for {
 		connections, err := epoller.Wait()
 		if err != nil {
@@ -169,7 +169,7 @@ func start(meta *sessions, epoller *epoll) {
 			continue
 		}
 		for _, c := range connections {
-			err := processSession(enc, buf, c, meta)
+			err := processSession(enc, dec, c, meta)
 			if err != nil {
 				if err := epoller.Remove(c); err != nil {
 					log.Printf("Failed to remove %v", err)
