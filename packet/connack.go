@@ -34,3 +34,23 @@ func (p *ConnAck) Length() int {
 func (p *ConnAck) GetType() byte {
 	return CONNACK
 }
+func unmarshalConnAck(p *ConnAck, buff []byte) (int, error) {
+	if len(buff) < 2 {
+		return 0, errors.New("buffer to short to decode connack")
+	}
+	p.ReturnCode = int32(buff[1])
+	return 0, nil
+}
+
+type connAckHandler func(*ConnAck) error
+
+func ConnAckDecoder(fn connAckHandler) func(h *Header, buffer []byte) error {
+	return func(h *Header, buffer []byte) error {
+		packet := &ConnAck{Header: h}
+		_, err := unmarshalConnAck(packet, buffer)
+		if err != nil {
+			return err
+		}
+		return fn(packet)
+	}
+}

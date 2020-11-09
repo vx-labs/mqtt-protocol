@@ -23,6 +23,8 @@ func TypeString(p Packet) string {
 	switch p.Type() {
 	case CONNECT:
 		return "CONNECT"
+	case CONNACK:
+		return "CONNACK"
 	case SUBSCRIBE:
 		return "SUBSCRIBE"
 	case PUBLISH:
@@ -60,6 +62,9 @@ func (c *Connect) UnmarshalMQTT(buf []byte) (int, error) {
 	return unmarshalConnect(c, buf)
 }
 func (*ConnAck) Type() byte { return CONNACK }
+func (c *ConnAck) UnmarshalMQTT(buf []byte) (int, error) {
+	return unmarshalConnAck(c, buf)
+}
 
 func (*Publish) Type() byte { return PUBLISH }
 func (c *Publish) UnmarshalMQTT(buf []byte) (int, error) {

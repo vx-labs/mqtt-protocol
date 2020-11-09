@@ -121,6 +121,8 @@ func unmarshalPacket(packetType byte, header *packet.Header, buffer []byte) (pac
 	switch packetType {
 	case packet.CONNECT:
 		p = &packet.Connect{Header: header}
+	case packet.CONNACK:
+		p = &packet.ConnAck{Header: header}
 	case packet.SUBSCRIBE:
 		p = &packet.Subscribe{Header: header}
 	case packet.PUBLISH:

@@ -7,7 +7,6 @@ message Header {
 }
 message Connect {
     Header header =1;
-    string id = 2;
     bool clean = 3;
     bytes clientId = 4;
     bytes username  = 5;
