@@ -27,7 +27,7 @@ func isSet(b byte, mask byte) bool {
 	return b&mask == mask
 }
 func set(b byte, mask byte) byte {
-	return b & mask
+	return b | mask
 }
 func username(b byte) bool {
 	return isSet(b, CONNECT_FLAG_USERNAME)
@@ -60,10 +60,10 @@ func unmarshalConnect(p *Connect, buff []byte) (int, error) {
 
 	if name, ok := supportedProtocolVersions[protocolVersion]; !ok {
 		return total, fmt.Errorf("unsupported mqtt version")
-		if name != string(protocolName) {
-			return total, fmt.Errorf("unsupported protocol name")
-		}
+	} else if name != string(protocolName) {
+		return total, fmt.Errorf("unsupported protocol name")
 	}
+
 	flags := buff[total]
 
 	p.Clean = cleanSession(flags)
@@ -154,7 +154,7 @@ func EncodeConnect(p *Connect, buff []byte) (int, error) {
 	if len(p.Password) > 0 {
 		flag = set(CONNECT_FLAG_PASSWORD, flag)
 	}
-	buff[total+1] = flag
+	buff[total] = flag
 	total++
 	binary.BigEndian.PutUint16(buff[total:], uint16(p.KeepaliveTimer))
 	total += 2
