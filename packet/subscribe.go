@@ -2,15 +2,22 @@ package packet
 
 import (
 	"encoding/binary"
+	"errors"
 )
 
 func countSubscribeTopics(buff []byte) (count int, err error) {
 	for {
+		if len(buff) < 3 {
+			return 0, errors.New("buffer too short")
+		}
 		length := int(binary.BigEndian.Uint16(buff))
 		next := 2 + length + 1
 		count++
 		if next == len(buff) {
 			return
+		}
+		if len(buff) < next {
+			return 0, errors.New("buffer too short")
 		}
 		buff = buff[next:]
 	}
@@ -71,7 +78,7 @@ func EncodeSubscribe(p *Subscribe, buff []byte) (int, error) {
 		if err != nil {
 			return total, err
 		}
-		buff[idx] = byte(p.Qos[idx])
+		buff[total] = byte(p.Qos[idx])
 		total++
 	}
 	return total, nil

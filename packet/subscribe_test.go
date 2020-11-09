@@ -7,15 +7,26 @@ import (
 )
 
 func TestSubscribe_Decode(t *testing.T) {
-	buff := []byte{
-		0x0, 0x1,
-		0x0, 0x2, 'a', 'b',
-		0x1,
-	}
-	p := &Subscribe{}
-	n, err := UnmarshalSubscribe(p, buff)
-	assert.Equal(t, 7, n)
-	assert.Nil(t, err)
+	t.Run("valid", func(t *testing.T) {
+		buff := []byte{
+			0x0, 0x1,
+			0x0, 0x2, 'a', 'b',
+			0x1,
+		}
+		p := &Subscribe{}
+		n, err := UnmarshalSubscribe(p, buff)
+		assert.Equal(t, 7, n)
+		assert.Nil(t, err)
+	})
+	t.Run("invalid", func(t *testing.T) {
+		buff := []byte{
+			0x0, 0x1,
+			0x0, 0x2, 'a', 'b',
+		}
+		p := &Subscribe{}
+		_, err := UnmarshalSubscribe(p, buff)
+		assert.NotNil(t, err)
+	})
 }
 
 func TestSubscribe_CountTopics(t *testing.T) {
