@@ -6,6 +6,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSubscribe_Encode(t *testing.T) {
+	p := &Subscribe{Header: &Header{}, MessageId: 1, Qos: []int32{1}, Topic: [][]byte{{'a', 'b'}}}
+	buff := make([]byte, 7)
+	p.Encode(buff)
+
+	assert.Equal(t, []byte{
+		0x0, 0x1,
+		0x0, 0x2, 'a', 'b',
+		0x1,
+	}, buff)
+
+}
 func TestSubscribe_Decode(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		buff := []byte{
