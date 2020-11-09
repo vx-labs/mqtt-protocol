@@ -25,13 +25,15 @@ func TestConnect_Decode(t *testing.T) {
 
 func TestConnect_Encode(t *testing.T) {
 	p := &Connect{
-		Clean: true,
+		Clean:    true,
+		ClientId: []byte("test"),
+		Username: []byte("a"),
 	}
 	buff := make([]byte, ConnectLength(p))
 	n, err := EncodeConnect(p, buff)
 	assert.Nil(t, err)
 	assert.Equal(t, ConnectLength(p), n)
-	assert.Equal(t, []byte{0x0, 0x4, 0x4d, 0x51, 0x54, 0x54, 0x4, 0x0, 0x0, 0x0, 0x0, 0x0}, buff)
+	assert.Equal(t, []byte{0x0, 0x4, 0x4d, 0x51, 0x54, 0x54, 0x4, 0x0, 0x0, 0x0, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0x0, 0x1, 0x61}, buff)
 }
 
 func BenchmarkConnect_Decode(b *testing.B) {

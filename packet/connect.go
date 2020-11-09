@@ -154,6 +154,7 @@ func EncodeConnect(p *Connect, buff []byte) (int, error) {
 	if len(p.Password) > 0 {
 		flag = set(CONNECT_FLAG_PASSWORD, flag)
 	}
+	buff[total+1] = flag
 	total++
 	binary.BigEndian.PutUint16(buff[total:], uint16(p.KeepaliveTimer))
 	total += 2
