@@ -129,6 +129,8 @@ func unmarshalPacket(packetType byte, header *packet.Header, buffer []byte) (pac
 		p = &packet.Publish{Header: header}
 	case packet.PINGREQ:
 		p = &packet.PingReq{Header: header}
+	case packet.PINGRESP:
+		p = &packet.PingResp{Header: header}
 	case packet.PUBACK:
 		p = &packet.PubAck{Header: header}
 	case packet.SUBACK:

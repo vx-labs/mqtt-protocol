@@ -1,6 +1,6 @@
 package packet
 
-func decodePingResp(p *PingResp, buff []byte) (int, error) {
+func UnmarshalPingResp(p *PingResp, buff []byte) (int, error) {
 	return 0, nil
 }
 
@@ -9,7 +9,7 @@ type pingRespHandler func(*PingResp) error
 func PingRespDecoder(fn pingRespHandler) func(h *Header, buffer []byte) error {
 	return func(h *Header, buffer []byte) error {
 		packet := &PingResp{Header: h}
-		_, err := decodePingResp(packet, buffer)
+		_, err := UnmarshalPingResp(packet, buffer)
 		if err != nil {
 			return err
 		}

@@ -31,6 +31,8 @@ func TypeString(p Packet) string {
 		return "PUBLISH"
 	case PINGREQ:
 		return "PINGREQ"
+	case PINGRESP:
+		return "PINGRESP"
 	case PUBACK:
 		return "PUBACK"
 	case SUBACK:
@@ -94,7 +96,10 @@ func (*PingReq) Type() byte { return PINGREQ }
 func (c *PingReq) UnmarshalMQTT(buf []byte) (int, error) {
 	return UnmarshalPingReq(c, buf)
 }
-func (*PingResp) Type() byte   { return PINGRESP }
+func (*PingResp) Type() byte { return PINGRESP }
+func (c *PingResp) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalPingResp(c, buf)
+}
 func (*Disconnect) Type() byte { return DISCONNECT }
 func (c *Disconnect) UnmarshalMQTT(buf []byte) (int, error) {
 	return UnmarshalDisconnect(c, buf)
