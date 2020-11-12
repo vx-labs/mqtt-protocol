@@ -76,7 +76,7 @@ func TestEncoder_PubAck(t *testing.T) {
 	})
 	assert.Nil(t, err)
 	assert.Equal(t,
-		[]byte{0x42, 0x2, 0x0, 0x9},
+		[]byte{0x40, 0x2, 0x0, 0x9},
 		writer.Bytes())
 }
 func BenchmarkEncoder_PubAck(b *testing.B) {

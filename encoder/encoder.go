@@ -92,8 +92,13 @@ func EncodeHeader(packetType byte, header *packet.Header, remLength int, buff []
 		retain = 1
 	}
 	qos = byte(header.Qos)
-
-	buff[0] = (packetType << 4) + (dup << 3) + (qos << 1) + retain
+	buff[0] = (packetType << 4)
+	switch packetType {
+	case packet.PUBLISH:
+		buff[0] += (dup << 3) + (qos << 1) + retain
+	case packet.PUBREL, packet.SUBSCRIBE, packet.UNSUBSCRIBE:
+		buff[0] += 1 << 1
+	}
 	total := 1
 	n := binary.PutUvarint(buff[1:], uint64(remLength))
 	total += n
