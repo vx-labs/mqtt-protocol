@@ -2,7 +2,7 @@ package packet
 
 //go:generate protoc --go_out=plugins=grpc:. pb.proto
 const (
-	_ byte = iota
+	RESERVED byte = iota
 	CONNECT
 	CONNACK
 	PUBLISH
@@ -35,6 +35,12 @@ func TypeString(p Packet) string {
 		return "PINGRESP"
 	case PUBACK:
 		return "PUBACK"
+	case PUBREL:
+		return "PUBREL"
+	case PUBREC:
+		return "PUBREC"
+	case PUBCOMP:
+		return "PUBCOMP"
 	case SUBACK:
 		return "SUBACK"
 	case UNSUBSCRIBE:
@@ -75,6 +81,18 @@ func (c *Publish) UnmarshalMQTT(buf []byte) (int, error) {
 func (*PubAck) Type() byte { return PUBACK }
 func (c *PubAck) UnmarshalMQTT(buf []byte) (int, error) {
 	return UnmarshalPubAck(c, buf)
+}
+func (*PubRec) Type() byte { return PUBREC }
+func (c *PubRec) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalPubRec(c, buf)
+}
+func (*PubRel) Type() byte { return PUBREL }
+func (c *PubRel) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalPubRel(c, buf)
+}
+func (*PubComp) Type() byte { return PUBCOMP }
+func (c *PubComp) UnmarshalMQTT(buf []byte) (int, error) {
+	return UnmarshalPubComp(c, buf)
 }
 func (*Subscribe) Type() byte { return SUBSCRIBE }
 func (c *Subscribe) UnmarshalMQTT(buf []byte) (int, error) {

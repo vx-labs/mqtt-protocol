@@ -1,70 +1,81 @@
 syntax = "proto3";
 package packet;
 message Header {
-	bool dup = 1;
-	int32 qos = 2;
-	bool retain = 3;
+  bool dup = 1;
+  int32 qos = 2;
+  bool retain = 3;
 }
 message Connect {
-    Header header =1;
-    bool clean = 3;
-    bytes clientId = 4;
-    bytes username  = 5;
-    bytes password  = 6;
-    bytes willTopic = 7;
-    bytes willPayload = 8;
-    int32 willQos = 9;
-    bool willRetain = 10;
-    int32 keepaliveTimer = 11;
+  Header header = 1;
+  bool clean = 3;
+  bytes clientId = 4;
+  bytes username = 5;
+  bytes password = 6;
+  bytes willTopic = 7;
+  bytes willPayload = 8;
+  int32 willQos = 9;
+  bool willRetain = 10;
+  int32 keepaliveTimer = 11;
 };
 message ConnAck {
-    Header header = 1;
-    int32 returnCode = 2;
+  Header header = 1;
+  int32 returnCode = 2;
 };
 
 message Disconnect {
-    Header header =1;
-    string id = 2;
+  Header header = 1;
+  string id = 2;
 };
 
 message Publish {
-    Header header =1;
-    int32 messageId = 2;
-    bytes topic = 3;
-    bytes payload = 4;
+  Header header = 1;
+  int32 messageId = 2;
+  bytes topic = 3;
+  bytes payload = 4;
 };
 
 message PubAck {
-    Header header =1;
-    int32 messageId = 2;
+  Header header = 1;
+  int32 messageId = 2;
+};
+
+message PubRel {
+  Header header = 1;
+  int32 messageId = 2;
+};
+
+message PubComp {
+  Header header = 1;
+  int32 messageId = 2;
+};
+
+message PubRec {
+  Header header = 1;
+  int32 messageId = 2;
 };
 
 message Subscribe {
-    Header header =1;
-    int32 messageId = 2;
-    repeated bytes topic = 3;
-    repeated int32 qos = 4;
+  Header header = 1;
+  int32 messageId = 2;
+  repeated bytes topic = 3;
+  repeated int32 qos = 4;
 };
 message SubAck {
-    Header header =1;
-    int32 messageId = 2;
-    repeated int32 qos = 3;
+  Header header = 1;
+  int32 messageId = 2;
+  repeated int32 qos = 3;
 };
 
 message Unsubscribe {
-    Header header =1;
-    int32 messageId = 2;
-    repeated bytes topic = 3;
+  Header header = 1;
+  int32 messageId = 2;
+  repeated bytes topic = 3;
 };
 message UnsubAck {
-    Header header =1;
-    int32 messageId = 2;
+  Header header = 1;
+  int32 messageId = 2;
 };
 
-message PingReq {
-    Header header =1;
-};
+message PingReq { Header header = 1; };
 
-message PingResp {
-    Header header =1;
-};
+message PingResp { Header header = 1; };

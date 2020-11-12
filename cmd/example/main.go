@@ -133,11 +133,16 @@ func (w *worker) processSession(c net.Conn) error {
 		log.Printf("session lost: %v, %d message published", err, session.published)
 		return err
 	}
+	c.SetDeadline(
+		time.Now().Add(time.Duration(session.keepalive) * time.Second),
+	)
 	switch p := pkt.(type) {
+	case *packet.PubRel:
+		w.enc.Encode(c, &packet.PubComp{
+			Header:    p.Header,
+			MessageId: p.MessageId,
+		})
 	case *packet.Publish:
-		c.SetDeadline(
-			time.Now().Add(time.Duration(session.keepalive) * time.Second),
-		)
 		session.published++
 		if p.Header.Qos == 1 {
 			w.enc.PubAck(c, &packet.PubAck{
@@ -145,10 +150,13 @@ func (w *worker) processSession(c net.Conn) error {
 				MessageId: p.MessageId,
 			})
 		}
+		if p.Header.Qos == 2 {
+			w.enc.Encode(c, &packet.PubRec{
+				Header:    p.Header,
+				MessageId: p.MessageId,
+			})
+		}
 	case *packet.Subscribe:
-		c.SetDeadline(
-			time.Now().Add(time.Duration(session.keepalive) * time.Second),
-		)
 		w.enc.SubAck(c, &packet.SubAck{
 			Header:    p.Header,
 			MessageId: p.MessageId,
@@ -158,9 +166,6 @@ func (w *worker) processSession(c net.Conn) error {
 		log.Printf("session closed, %d message published", session.published)
 		return errors.New("session closed")
 	case *packet.PingReq:
-		c.SetDeadline(
-			time.Now().Add(time.Duration(session.keepalive) * time.Second),
-		)
 		w.enc.PingResp(c, &packet.PingResp{
 			Header: p.Header,
 		})
