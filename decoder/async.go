@@ -10,16 +10,6 @@ import (
 	"github.com/vx-labs/mqtt-protocol/packet"
 )
 
-type AsyncDecoder struct {
-	stats     StatRecorder
-	queue     chan packet.Packet
-	done      chan struct{}
-	cancel    chan struct{}
-	err       error
-	headerBuf []byte
-	msgBuf    []byte
-}
-
 type Packet struct {
 	timestamp int64
 	err       error
@@ -37,82 +27,16 @@ func (local Packet) Less(remote btree.Item) bool {
 	return local.timestamp < remote.(Packet).timestamp
 }
 
-type asyncDecoderCreateOp func(*AsyncDecoder)
-
-func WithStatRecorder(recorder StatRecorder) asyncDecoderCreateOp {
-	return func(a *AsyncDecoder) {
-		a.stats = recorder
-	}
-}
-
-func Async(r io.Reader, opts ...asyncDecoderCreateOp) *AsyncDecoder {
-	a := &AsyncDecoder{
-		stats:     &noopStatRecorder{},
-		queue:     make(chan packet.Packet, 20),
-		done:      make(chan struct{}),
-		cancel:    make(chan struct{}),
-		headerBuf: make([]byte, 4),
-	}
-	for _, opt := range opts {
-		opt(a)
-	}
-	go func() {
-		defer func() {
-			close(a.queue)
-			close(a.done)
-		}()
-		for {
-			select {
-			case <-a.cancel:
-				a.err = errors.New("context cancelled")
-				return
-			default:
-				err := a.loop(r)
-				if err != nil {
-					a.err = err
-					return
-				}
-			}
-		}
-	}()
-	return a
-}
-
-func (a *AsyncDecoder) Cancel() {
-	close(a.cancel)
-}
-func (a *AsyncDecoder) Done() <-chan struct{} {
-	return a.done
-}
-func (a *AsyncDecoder) Err() error {
-	return a.err
-}
-func (a *AsyncDecoder) loop(r io.Reader) error {
-	pkt, n, err := decodeEncodedPacket(a.headerBuf, r)
-	a.stats.Add(float64(n))
-	if pkt != nil {
-		select {
-		case a.queue <- pkt:
-		case <-a.cancel:
-			return errors.New("context cancelled")
-		}
-	}
-	return err
-}
-func (a *AsyncDecoder) Packet() <-chan packet.Packet {
-	return a.queue
-}
-
-func decodeEncodedPacket(headerBuf []byte, r io.Reader) (packet.Packet, int, error) {
-	if len(headerBuf) != 4 {
-		return nil, 0, errors.New("invalid header buffer size")
+func decodeEncodedPacket(buf []byte, r io.Reader) (packet.Packet, int, error) {
+	if len(buf) < 4 {
+		return nil, 0, errors.New("buffer too short")
 	}
 	h := &packet.Header{}
-	packetType, buffer, count, err := readMessageBuffer(h, headerBuf, r)
+	packetType, count, err := readMessageBuffer(h, buf, r)
 	if err != nil {
 		return nil, count, err
 	}
-	pkt, pktRead, err := unmarshalPacket(packetType, h, buffer)
+	pkt, pktRead, err := unmarshalPacket(packetType, h, buf)
 	return pkt, pktRead + count, err
 }
 

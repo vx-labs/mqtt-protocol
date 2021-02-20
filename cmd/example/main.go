@@ -32,18 +32,10 @@ func main() {
 
 func acceptLoop(l net.Listener) {
 
-	epoller, err := MkEpoll()
-	if err != nil {
-		panic(err)
-	}
 	worker := &worker{
 		enc: encoder.New(),
-		dec: decoder.New(),
-		meta: &sessions{
-			data: make(map[string]*session),
-		},
+		dec: decoder.New(4096),
 	}
-	go worker.start(epoller)
 	var tempDelay time.Duration
 	for {
 		c, err := l.Accept()
@@ -68,7 +60,7 @@ func acceptLoop(l net.Listener) {
 			l.Close()
 			return
 		}
-		go worker.runSession(c, epoller)
+		go worker.runSession(c)
 	}
 }
 
@@ -84,8 +76,9 @@ type session struct {
 	published int
 }
 
-func (w *worker) runSession(c net.Conn, epoller *epoll) {
-	pkt, err := decoder.Decode(c, make([]byte, 4))
+func (w *worker) runSession(c net.Conn) {
+	defer c.Close()
+	pkt, err := w.dec.Decode(c)
 	if err != nil {
 		return
 	}
@@ -93,42 +86,32 @@ func (w *worker) runSession(c net.Conn, epoller *epoll) {
 		return
 	}
 	p := pkt.(*packet.Connect)
-	c.SetDeadline(
-		time.Now().Add(time.Duration(p.KeepaliveTimer) * 2 * time.Second),
-	)
 	log.Printf("%s connected", string(p.ClientId))
 
 	encoder.New().Encode(c, &packet.ConnAck{
 		Header:     p.Header,
 		ReturnCode: packet.CONNACK_CONNECTION_ACCEPTED,
 	})
-	w.meta.mtx.Lock()
-	if err := epoller.Add(c); err != nil {
-		c.Close()
-		w.meta.mtx.Unlock()
-		log.Printf("Failed to add connection %v", err)
-		return
+	session := &session{keepalive: p.KeepaliveTimer, c: c, published: 0, connect: p}
+
+	for {
+		c.SetDeadline(
+			time.Now().Add(time.Duration(p.KeepaliveTimer) * 2 * time.Second),
+		)
+		err := w.processSession(session, c)
+		if err != nil {
+			return
+		}
 	}
-	w.meta.data[c.RemoteAddr().String()] = &session{keepalive: p.KeepaliveTimer, c: c, published: 0, connect: p}
-	w.meta.mtx.Unlock()
 }
 
 type worker struct {
-	enc  *encoder.Encoder
-	dec  *decoder.Sync
-	meta *sessions
+	enc *encoder.Encoder
+	dec *decoder.Sync
 }
 
-func (w *worker) processSession(c net.Conn) error {
-	w.meta.mtx.Lock()
-	session, ok := w.meta.data[c.RemoteAddr().String()]
-	w.meta.mtx.Unlock()
-	if !ok {
-		return errors.New("session not found")
-	}
-
+func (w *worker) processSession(session *session, c net.Conn) error {
 	pkt, err := w.dec.Decode(c)
-
 	if err != nil {
 		log.Printf("session lost: %v, %d message published", err, session.published)
 		return err
@@ -173,25 +156,4 @@ func (w *worker) processSession(c net.Conn) error {
 		log.Printf("received unknown packet")
 	}
 	return nil
-}
-
-func (w *worker) start(epoller *epoll) {
-	for {
-		connections, err := epoller.Wait()
-		if err != nil {
-			log.Printf("Failed to epoll wait %v", err)
-			continue
-		}
-		for _, c := range connections {
-			err := w.processSession(c)
-			if err != nil {
-				if err := epoller.Remove(c); err != nil {
-					log.Printf("Failed to remove %v", err)
-				}
-				w.meta.mtx.Lock()
-				delete(w.meta.data, c.RemoteAddr().String())
-				w.meta.mtx.Unlock()
-			}
-		}
-	}
 }
